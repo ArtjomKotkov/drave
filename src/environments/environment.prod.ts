@@ -1,3 +1,6 @@
+import {appData} from "../config/appData";
+
 export const environment = {
-  production: true
+  production: true,
+  application: appData
 };
