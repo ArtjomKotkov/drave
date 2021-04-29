@@ -1,8 +1,7 @@
 import {AbstractDriveHandler} from "../base/drive.handler";
-import get = Reflect.get;
 
 
-class YandexDriveHandler implements AbstractDriveHandler {
+export class YandexDriveHandler implements AbstractDriveHandler {
 
   apiUrl = 'https://cloud-api.yandex.net/v1/disk/';
 

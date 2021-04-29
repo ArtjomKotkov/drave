@@ -12,15 +12,4 @@ export class YandexAuthHandler {
     scope=${this.yandexApiSettings.scope}`
   }
 
-  extractToken(): object {
-    const hash = location.hash;
-    return hash.split('&').reduce((obj, item) => {
-      const keyValue = item.split('=');
-      return {
-        ...obj,
-        [keyValue[0]]: keyValue[1]
-      }
-    }, {})
-  }
-
 }

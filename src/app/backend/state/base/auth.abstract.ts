@@ -4,5 +4,11 @@ export abstract class AbstractAuthService {
 
   abstract processAfterRedirect(): void;
 
+  abstract updateToken(): void;
+
+  abstract disconnect(): void;
+
+  abstract getCredentials(): object;
+
 }
 
