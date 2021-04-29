@@ -23,22 +23,32 @@ export abstract class AbstractDriveHandler {
 
   abstract getDownloadLink(identificator: string, fields: Array<string> | undefined): object;
 
-  abstract copy(identificator_from: string, identificator_to: string, fields: Array<string> | undefined): object;
+  abstract copy(
+    identificator_from: string,
+    identificator_to: string,
+    fields: Array<string> | undefined,
+    overwrite: boolean
+  ): object;
 
-  abstract move(identificator_from: string, identificator_to: string, fields: Array<string> | undefined): object;
+  abstract move(
+    identificator_from: string,
+    identificator_to: string,
+    fields: Array<string> | undefined,
+    overwrite: boolean
+  ): object;
 
-  abstract publish(identificator: string): object;
+  abstract publish(identificator: string, fields: Array<string> | undefined): object;
 
-  abstract unpublish(identificator: string): object;
+  abstract unpublish(identificator: string, fields: Array<string> | undefined): object;
 
-  abstract getUploadLink(identificator: string): object;
+  abstract getUploadLink(identificator: string, fields: Array<string> | undefined): object;
 
-  abstract uploadByUrl(identificator: string, url: string): object;
+  abstract uploadByUrl(identificator: string, url: string, fields: Array<string> | undefined): object;
 
-  abstract clearTrash(identificator: string): object;
+  abstract clearTrash(identificator: string, fields: Array<string> | undefined): object;
 
-  abstract getTrash(identificator: string): object;
+  abstract getTrash(identificator: string, fields: Array<string> | undefined): object;
 
-  abstract restoreTrash(identificator: string): object;
+  abstract restoreTrash(identificator: string, fields: Array<string> | undefined): object;
 
 }
