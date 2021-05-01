@@ -1,5 +1,10 @@
 export abstract class AbstractStorage implements Storage {
-  readonly length: number;
+
+  storage: any;
+
+  get length(): number {
+    return this.storage.length;
+  }
 
   abstract clear(): void;
 

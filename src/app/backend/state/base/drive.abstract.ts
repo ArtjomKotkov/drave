@@ -3,7 +3,7 @@ import {AbstractFile} from "./model.abstract";
 
 
 export abstract class DriveAbstractService {
-  handler: AbstractDriveHandler;
+  abstract handler: AbstractDriveHandler;
 
   abstract getRoot(fields: Array<string> | undefined, limit: number | undefined, offset: number | undefined): Promise<AbstractFile>;
 
@@ -15,7 +15,7 @@ export abstract class DriveAbstractService {
 
   abstract makeDir(identificator: string, fields: Array<string> | undefined): Promise<object>;
 
-  abstract getDownloadLink(identificator: string, fields: Array<string> | undefined): Promise<string>;
+  abstract getDownloadLink(identificator: string, fields: Array<string> | undefined): Promise<object>;
 
   abstract copy(identificator_from: string, identificator_to: string, fields: Array<string> | undefined, overwrite: boolean): Promise<object>;
 
@@ -29,21 +29,16 @@ export abstract class DriveAbstractService {
 
   abstract uploadByUrl(identificator: string, url: string, fields: Array<string> | undefined): Promise<object>;
 
-  abstract clearTrash(identificator: string, fields: Array<string> | undefined): Promise<object>;
+  abstract clearTrash(fields: Array<string> | undefined): Promise<object>;
+
+  abstract clearFromTrash(identificator: string, fields: Array<string> | undefined): Promise<object>;
 
   abstract getTrash(identificator: string, fields: Array<string> | undefined): Promise<object>;
 
   abstract restoreTrash(identificator: string, fields: Array<string> | undefined): Promise<object>;
 
-  async moveToDrive(identificator_from: string, identificator_to: string, driveService: DriveAbstractService, overwrite: boolean): Promise<void> {
-    const moveFromLink = await this.getDownloadLink(identificator_from, undefined);
-    await driveService.uploadByUrl(identificator_to, moveFromLink, undefined);
-    await this.delete(identificator_from, undefined, true);
-  }
+  abstract moveToDrive(identificator_from: string, identificator_to: string, driveService: DriveAbstractService, overwrite: boolean): void
 
-  async copyToDrive(identificator_from: string, identificator_to: string, driveService: DriveAbstractService, overwrite: boolean): Promise<void> {
-    const moveFromLink = await this.getDownloadLink(identificator_from, undefined);
-    await driveService.uploadByUrl(identificator_to, moveFromLink, undefined);
-  }
+  abstract copyToDrive(identificator_from: string, identificator_to: string, driveService: DriveAbstractService, overwrite: boolean): void;
 
 }

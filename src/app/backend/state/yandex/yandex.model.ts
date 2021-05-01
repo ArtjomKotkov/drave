@@ -1,4 +1,5 @@
-import {AbstractFile, AbstractResponse} from "../base/model.abstract";
+import {AbstractFile, AbstractResponse, AbstractDrive} from "../base/model.abstract";
+
 
 export interface YandexToken {
   access_token: string

@@ -1,6 +1,6 @@
 export abstract class AbstractDriveHandler {
 
-  apiUrl: string;
+  abstract apiUrl: string;
 
   abstract getMetaData(): object;
 

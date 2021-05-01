@@ -1,7 +1,7 @@
 import {AbstractDriveHandler} from "../base/drive.handler";
 
 
-export class YandexDriveHandler implements AbstractDriveHandler {
+export class YandexDriveHandler extends AbstractDriveHandler {
 
   apiUrl = 'https://cloud-api.yandex.net/v1/disk/';
 

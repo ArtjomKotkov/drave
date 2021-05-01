@@ -4,7 +4,7 @@ import {YandexConfig} from "./config.data";
 import {YandexFile, YandexResponse} from "./yandex.model";
 
 
-export abstract class YanderDriveService {
+export class YandexDriveService extends DriveAbstractService{
   handler: YandexDriveHandler = new YandexDriveHandler();
 
   async getRoot(
@@ -28,8 +28,8 @@ export abstract class YanderDriveService {
     identificator: string,
     fields: Array<string> | undefined = undefined,
     permanently: boolean = false
-  ): Promise<void> {
-    await this.handler.delete(identificator, fields, permanently);
+  ): Promise<YandexResponse> {
+    return await this.handler.delete(identificator, fields, permanently) as YandexResponse;
   };
 
   async update(

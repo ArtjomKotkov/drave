@@ -4,14 +4,11 @@ import {YandexAuthHandler} from "../../handlers";
 import {YandexToken} from "./yandex.model";
 
 
-export class YandexAuthService implements AbstractAuthService {
+export class YandexAuthService extends AbstractAuthService {
 
-  yandex_storage_key = 'credentials_yandex';
-
-  constructor(
-    private authHandler: YandexAuthHandler,
-    private localStorage: BrowserLocalStorage
-  ) {}
+  private yandexStorageKey = 'credentials_yandex';
+  private localStorage = new BrowserLocalStorage();
+  private authHandler = new YandexAuthHandler();
 
   redirectToAuth(): void {
     window.location.href = this.authHandler.getAuthUrl();
@@ -19,7 +16,7 @@ export class YandexAuthService implements AbstractAuthService {
 
   processAfterRedirect(): void {
     const tokenInfo = this.extractToken() as YandexToken;
-    this.localStorage.setJsonItem(this.yandex_storage_key, tokenInfo);
+    this.localStorage.setJsonItem(this.yandexStorageKey, tokenInfo);
   }
 
   updateToken(): void {
@@ -31,7 +28,7 @@ export class YandexAuthService implements AbstractAuthService {
   };
 
   getCredentials(): YandexToken {
-    return this.localStorage.getJsonItem(this.yandex_storage_key) as YandexToken;
+    return this.localStorage.getJsonItem(this.yandexStorageKey) as YandexToken;
   }
 
   extractToken(): object {
