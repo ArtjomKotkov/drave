@@ -2,6 +2,16 @@ import {DriveAbstractService} from './drive.abstract';
 import {AbstractAuthService} from './auth.abstract';
 import {AbstractConfig} from './config.abstract';
 
+export interface AbstractDriveMetaData {
+  availableSpace: number;
+  filledSpace: number;
+  trashFilledSpace: number;
+  owner: {
+    id: string;
+    login?: string;
+    displayName?: string;
+  }; // По овнеру исключаем дублиты дисков.
+}
 
 export interface StorableData {
   credentials: AbstractToken;
@@ -37,6 +47,7 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
   abstract authService: AbstractAuthService;
   abstract config: DriveConfig | undefined;
   abstract defaultSettings: AbstractConfig;
+  abstract metaData: AbstractDriveMetaData;
 
   get action(): DriveAbstractService {
     return this.driveService;
@@ -70,5 +81,7 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
       config: this.configuration
     } as StorableData;
   }
+
+  abstract isReady(): boolean;
 
 }

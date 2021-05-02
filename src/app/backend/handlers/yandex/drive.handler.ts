@@ -1,9 +1,15 @@
 import {AbstractDriveHandler} from '../base/drive.handler';
+import {YandexToken} from "../../state";
 
 
 export class YandexDriveHandler extends AbstractDriveHandler {
 
+  credentials: YandexToken;
   apiUrl = 'https://cloud-api.yandex.net/v1/disk/';
+
+  configure(credentials: YandexToken): void {
+    this.credentials = credentials;
+  }
 
   async getMetaData(): Promise<object> {
     const response = await fetch(this.apiUrl);

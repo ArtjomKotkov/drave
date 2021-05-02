@@ -3,6 +3,7 @@ import {YandexAuthService} from './auth.service';
 import {YandexDriveService} from './drive.service';
 import {YandexConfig} from './config.data';
 import {DrivesStorage} from '../../../core_services/storage/local.storage';
+import {YandexMetaData} from "./yandex.model";
 
 
 export class YandexDrive extends AbstractDrive {
@@ -15,10 +16,22 @@ export class YandexDrive extends AbstractDrive {
   driveService = new YandexDriveService();
   config = undefined;
   defaultSettings = YandexConfig;
+  metaData: YandexMetaData;
 
   save(): void {
-    console.log(this.storableData)
     this.storage.saveDrive(this.storableData.config.type, this.storableData.config.name, this.storableData);
+  }
+
+  prepare(): boolean {
+    if (!this.isReady()) {
+      return false;
+    }
+
+  }
+
+  isReady(): boolean {
+
+    return !!this.authService.getCredentials();
   }
 
 }

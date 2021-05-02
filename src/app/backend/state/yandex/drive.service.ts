@@ -1,11 +1,16 @@
 import {YandexDriveHandler} from '../../handlers';
 import {DriveAbstractService} from '../base/drive.abstract';
 import {YandexConfig} from './config.data';
-import {YandexFile, YandexResponse} from './yandex.model';
+import {YandexFile, YandexResponse, YandexToken} from './yandex.model';
 
 
-export class YandexDriveService extends DriveAbstractService{
+export class YandexDriveService extends DriveAbstractService {
   handler: YandexDriveHandler = new YandexDriveHandler();
+
+  configure(credentials: YandexToken): void {
+    this.handler.configure(credentials);
+  }
+
 
   async getRoot(
     fields: Array<string> | undefined = undefined,
