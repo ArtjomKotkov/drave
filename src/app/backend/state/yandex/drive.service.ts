@@ -1,7 +1,7 @@
-import {YandexDriveHandler} from "../../handlers";
-import {DriveAbstractService} from "../base/drive.abstract";
-import {YandexConfig} from "./config.data";
-import {YandexFile, YandexResponse} from "./yandex.model";
+import {YandexDriveHandler} from '../../handlers';
+import {DriveAbstractService} from '../base/drive.abstract';
+import {YandexConfig} from './config.data';
+import {YandexFile, YandexResponse} from './yandex.model';
 
 
 export class YandexDriveService extends DriveAbstractService{

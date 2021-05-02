@@ -1,1 +1,1 @@
-export {FactoryResolver} from "./drive.factory";
+export {FactoryResolver} from './drive.factory';

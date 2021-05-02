@@ -1,45 +1,55 @@
-import { Injectable } from '@angular/core';
-import { AbstractStorage } from "./abstract.storage";
+import {Injectable} from '@angular/core';
+import {environment} from '../../../environments/environment';
+import {StorageModel} from './storage.model';
+import {StorableData} from '../../backend/state';
 
-
-@Injectable()
-export class BrowserLocalStorage implements AbstractStorage {
+@Injectable({
+  providedIn: 'root'
+})
+export class DrivesStorage {
   /**
    * Storage
    */
 
   storage = window.localStorage;
+  cachedValue: StorageModel = {};
+  rootKey = environment.application.localStorageData.driveRootKey;
 
-  get length(): number {
-    return this.storage.length;
+  connect(): void {
+    const data = this.storage.getItem(this.rootKey);
+    this.cachedValue = JSON.parse(data ? data : '') as StorageModel;
   }
 
   clear(): void {
     this.storage.clear();
   }
 
-  getItem(key: string): string | null {
-    return this.storage.getItem(key);
+  save(): void {
+    this.storage.setItem(this.rootKey, JSON.stringify(this.cachedValue));
   }
 
-  key(index: number): string | null {
-    return this.storage.key(index);
+  getAll(): StorageModel {
+    return this.cachedValue;
   }
 
-  removeItem(key: string): void {
-    this.storage.removeItem(key);
+  getDrive(type: string, key: string): StorableData | undefined {
+    const typeMap = this.cachedValue[type];
+    if (!typeMap) {
+      return;
+    }
+    return this.cachedValue[type][key] as StorableData;
   }
 
-  setItem(key: string, value: string): void {
-    this.storage.setItem(key, value);
+  saveDrive(type: string, key: string, data: StorableData): void {
+    const typeMap = this.cachedValue[type];
+    if (!typeMap) {
+      this.cachedValue[type] = {};
+    }
+    this.cachedValue[type][key] = data;
+    this.save();
   }
 
-  setJsonItem(key: string, value: object): void {
-    this.storage.setItem(key, JSON.stringify(value));
-  }
-
-  getJsonItem(key: string): object | null {
-    const value = this.storage.getItem(key);
-    return value ? JSON.parse(value) : value;
+  getDrives(type: string): object {
+    return this.cachedValue[type];
   }
 }

@@ -3,6 +3,11 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
+import {ReactiveFormsModule} from '@angular/forms';
+
+import {DrivesStorage} from './core_services/storage/local.storage';
+import {FactoryResolver} from './backend/factories';
+
 
 @NgModule({
   declarations: [
@@ -10,9 +15,10 @@ import {AppComponent} from './app.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule
   ],
-  providers: [],
+  providers: [DrivesStorage, FactoryResolver],
   bootstrap: [AppComponent]
 })
 export class AppModule {

@@ -1,1 +1,1 @@
-export {AbstractDrive, DriveConfig} from "./model.abstract";
+export {AbstractDrive, DriveConfig, AbstractToken, StorableData} from './model.abstract';

@@ -1,5 +1,5 @@
-import {AbstractDriveHandler} from "../../handlers/base/drive.handler";
-import {AbstractFile} from "./model.abstract";
+import {AbstractDriveHandler} from '../../handlers/base/drive.handler';
+import {AbstractFile} from './model.abstract';
 
 
 export abstract class DriveAbstractService {

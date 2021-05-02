@@ -1,25 +1,19 @@
-import {AbstractFile, AbstractResponse, AbstractDrive} from "../base/model.abstract";
+import {AbstractFile, AbstractResponse, AbstractToken} from '../base/model.abstract';
 
-
-export interface YandexToken {
-  access_token: string
-  expires_in: string
-  token_type: string
-  state?: string
-  scope: string
+export interface YandexToken extends AbstractToken {
 }
 
 export interface YandexResponse extends AbstractFile {
- href: string
+ href: string;
 }
 
 export interface YandexFile extends  AbstractResponse {
-  antivirusStatus?: object
-  resourceId?: string
-  share?: object
-  file?: string
-  size?: number
-  photosliceTime?: string
+  antivirusStatus?: object;
+  resourceId?: string;
+  share?: object;
+  file?: string;
+  size?: number;
+  photosliceTime?: string;
   embedded?: {
     sort?: string
     items?: YandexFile[]
@@ -27,26 +21,26 @@ export interface YandexFile extends  AbstractResponse {
     offset?: number
     path?: string
     total?: number
-  }
+  };
   exif?: {
     dateTime?: string
-  }
-  customProperties?: object
-  mediaType?: string
-  preview?: string
-  type: string
-  mimeType?: string
-  revision?: number
-  publicUrl?: string
-  path: string
-  md5?: string
-  publicKey?: string
-  sha256?: string
-  name: string
-  created: string
-  modified: string
+  };
+  customProperties?: object;
+  mediaType?: string;
+  preview?: string;
+  type: string;
+  mimeType?: string;
+  revision?: number;
+  publicUrl?: string;
+  path: string;
+  md5?: string;
+  publicKey?: string;
+  sha256?: string;
+  name: string;
+  created: string;
+  modified: string;
   commentIds?: {
     privateResource?: string
     publicResource?: string
-  }
+  };
 }

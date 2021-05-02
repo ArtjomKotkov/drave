@@ -1,0 +1,15 @@
+<div class="connector-block" [style.background-color]="form.value.color">
+  <h2>{{factoryName | titlecase}}</h2>
+  <button (click)="isOpen = !isOpen">{{isOpen? 'Скрыть' : 'Подключить диск'}}</button>
+  <form *ngIf="isOpen" [formGroup]="form">
+    <div>
+      <span>Название:</span>
+      <input type="text" formControlName="name">
+    </div>
+    <div>
+      <span>Цвет диска:</span>
+      <input type="color" formControlName="color">
+    </div>
+    <button (click)="continueConnection()">Продолжить</button>
+  </form>
+</div>

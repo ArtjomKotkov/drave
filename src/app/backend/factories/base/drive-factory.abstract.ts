@@ -1,17 +1,18 @@
-import {AbstractDrive, DriveConfig} from "../../state";
+import {AbstractDrive, DriveConfig, StorableData} from '../../state';
 
 
-export class AbstractDriveFactory {
+export abstract class AbstractDriveFactory {
 
-  driveClass: any
+  abstract name: string;
+  abstract driveClass: any;
+  abstract sampleDrive: AbstractDrive;
 
-  make(): AbstractDrive {
-    return new this.driveClass();
-  }
+  abstract make(): AbstractDrive;
 
   configure(model: AbstractDrive, config: DriveConfig): AbstractDrive {
     model.configuration = config;
-    return model
+    return model;
   }
 
+  abstract makeFromStorableData(data: StorableData): AbstractDrive;
 }

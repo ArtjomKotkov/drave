@@ -1,4 +1,4 @@
-import {AbstractDriveHandler} from "../base/drive.handler";
+import {AbstractDriveHandler} from '../base/drive.handler';
 
 
 export class YandexDriveHandler extends AbstractDriveHandler {

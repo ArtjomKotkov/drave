@@ -1,4 +1,8 @@
-export const YandexConfig = {
+import {AbstractConfig} from '../base/config.abstract';
+
+
+export const YandexConfig: AbstractConfig  = {
   rootFolder: '/',
-  trashRoot: '/'
-}
+  trashRoot: '/',
+  baseColor: '#E61400'
+};
