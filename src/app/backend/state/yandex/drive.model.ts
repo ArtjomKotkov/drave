@@ -18,7 +18,6 @@ export class YandexDrive extends AbstractDrive {
 
   constructor() {
     super();
-
   }
 
   async init(config: DriveConfig, credentials: AbstractToken): Promise<void> {
@@ -32,7 +31,7 @@ export class YandexDrive extends AbstractDrive {
       return;
     }
     this.driveService.configure(credentials);
-    await this.driveService.getMetaData();
+    await this.driveService.updateMetaData();
     this.ready = true;
   }
 

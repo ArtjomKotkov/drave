@@ -14,5 +14,5 @@ export abstract class AbstractDriveFactory {
     return model;
   }
 
-  abstract makeFromStorableData(data: StorableData): AbstractDrive;
+  abstract makeFromStorableData(data: StorableData): Promise<AbstractDrive>;
 }

@@ -12,7 +12,7 @@ export class YandexDriveHandler extends AbstractDriveHandler {
   configure(credentials: YandexToken): void {
     this.request.configure({
       headers: {
-        Authorization: `Bearer ${credentials.access_token}`
+        Authorization: `OAuth ${credentials.access_token}`
       }
     });
   }

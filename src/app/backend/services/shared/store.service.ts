@@ -28,7 +28,7 @@ export class DrivesStoreService {
     return this.cachedValue;
   }
 
-  connect(): void {
+  async connect(): Promise<void> {
     const cacheData: CachedDrives = {};
     const data = this.localStorage.read(this.rootKey) as string;
     if (!data) {
@@ -40,7 +40,7 @@ export class DrivesStoreService {
       if (!factory) {
         return;
       }
-      cacheData[driveType] = driveData.map(driveMap => factory.makeFromStorableData(driveMap));
+      cacheData[driveType] = await Promise.all(driveData.map(async driveMap => await factory.makeFromStorableData(driveMap)));
     }
     this.cachedValue.next(cacheData);
   }
@@ -84,7 +84,10 @@ export class DrivesStoreService {
     if (!(drive.configuration.type in data)) {
       return false;
     }
-    return !!data[drive.configuration.type].find(driveStored => driveStored.meta?.owner === drive.meta?.owner);
+    const metaData = drive.driveService.getMetaData();
+    return !!data[drive.configuration.type].find(
+      driveStored => driveStored.driveService.getMetaData()?.owner === drive.driveService.getMetaData()?.owner
+    );
   }
 
   private save(): void {

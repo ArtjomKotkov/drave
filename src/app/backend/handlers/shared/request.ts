@@ -1,8 +1,10 @@
+type QueryType = {[key: string]: string | number | boolean | undefined};
+
 export interface RequestParams {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   data?: any;
   headers?: { [key: string]: string };
-  query?: { [key: string]: string | number | boolean | undefined};
+  query?: QueryType;
 }
 
 export interface RequestConfig {
@@ -30,13 +32,15 @@ export class Request {
     );
   }
 
-  private createUrl(url: string, data: any): string {
+  private createUrl(url: string, query?: QueryType): string {
     const newUrl = new URL(url);
-    Object.keys(data).forEach(key => {
-      if (data[key]) {
-        newUrl.searchParams.append(key, data[key]);
-      }
-    });
+    if (query) {
+      Object.keys(query).forEach(key => {
+        if (query[key]) {
+          newUrl.searchParams.append(key,  String(query[key]));
+        }
+      });
+    }
     return newUrl.toString();
   }
 

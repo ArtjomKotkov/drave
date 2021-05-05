@@ -8,17 +8,20 @@ import {BehaviorSubject} from 'rxjs';
 
 export class YandexDriveService extends DriveAbstractService {
   handler: YandexDriveHandler = new YandexDriveHandler();
-  metaData: BehaviorSubject<YandexMetaData | undefined> = new BehaviorSubject<YandexMetaData | undefined>(undefined);
+  private metaData: BehaviorSubject<YandexMetaData | undefined> = new BehaviorSubject<YandexMetaData | undefined>(undefined);
 
   configure(credentials: YandexToken): void {
     this.handler.configure(credentials);
   }
 
-  async getMetaData(): Promise<YandexMetaData> {
+  getMetaData(): YandexMetaData | undefined {
+    return this.metaData.getValue();
+  }
+
+  async updateMetaData(): Promise<void> {
     const data = await this.handler.getMetaData();
     const metaData = this.parseMetaData(data);
     this.metaData.next(metaData);
-    return metaData;
   }
 
   private parseMetaData(response: any): YandexMetaData {
@@ -41,6 +44,7 @@ export class YandexDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<YandexFile> {
+    console.log(await this.get(YandexConfig.rootFolder, fields, limit, offset))
     return await this.get(YandexConfig.rootFolder, fields, limit, offset);
   }
 
@@ -50,7 +54,11 @@ export class YandexDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<YandexFile> {
-    return await this.handler.get(identificator, fields, limit, offset) as YandexFile;
+    return this.structMap(
+      await this.handler.get(identificator, fields, limit, offset) as YandexFile,
+      this.snakeCaseToCamelCase,
+      true
+    );
   }
 
   async delete(
@@ -59,7 +67,7 @@ export class YandexDriveService extends DriveAbstractService {
     permanently: boolean = false
   ): Promise<YandexResponse> {
     const response = await this.handler.delete(identificator, fields, permanently) as YandexResponse;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -69,7 +77,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined
   ): Promise<YandexFile> {
     const response = await this.handler.update(identificator, data, fields) as YandexFile;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -94,7 +102,7 @@ export class YandexDriveService extends DriveAbstractService {
     overwrite: boolean = false
   ): Promise<YandexResponse> {
     const response = await this.handler.copy(identificatorFrom, identificatorTo, fields, overwrite) as YandexResponse;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -105,7 +113,7 @@ export class YandexDriveService extends DriveAbstractService {
     overwrite: boolean = false
   ): Promise<YandexResponse> {
     const response = await this.handler.move(identificatorFrom, identificatorTo, fields, overwrite) as YandexResponse;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -114,7 +122,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
     const response = await this.handler.publish(identificator, fields) as YandexResponse;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -123,7 +131,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
     const response = await this.handler.unpublish(identificator, fields) as YandexResponse;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -147,7 +155,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
     const response = await this.handler.clearTrash(YandexConfig.trashRoot, fields) as YandexResponse;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -156,7 +164,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
     const response = await this.handler.clearTrash(identificator, fields) as YandexResponse;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -172,7 +180,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
     const response = await this.handler.restoreTrash(identificator, fields) as YandexResponse;
-    await this.getMetaData();
+    await this.updateMetaData();
     return response;
   }
 
@@ -181,16 +189,16 @@ export class YandexDriveService extends DriveAbstractService {
     await drive.driveService.uploadByUrl(identificatorTo, moveFromLink.href, undefined);
     await this.delete(identificatorFrom, undefined, true);
 
-    await this.getMetaData();
-    await drive.driveService.getMetaData();
+    await this.updateMetaData();
+    await drive.driveService.updateMetaData();
   }
 
   async copyToDrive(identificatorFrom: string, identificatorTo: string, drive: AbstractDrive, overwrite?: boolean): Promise<void> {
     const moveFromLink = await this.getDownloadLink(identificatorFrom, undefined);
     await drive.driveService.uploadByUrl(identificatorTo, moveFromLink.href, undefined);
 
-    await this.getMetaData();
-    await drive.driveService.getMetaData();
+    await this.updateMetaData();
+    await drive.driveService.updateMetaData();
   }
 
 }

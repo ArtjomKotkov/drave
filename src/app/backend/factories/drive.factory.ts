@@ -32,10 +32,9 @@ class YandexDriveFactory extends AbstractDriveFactory {
     return new this.driveClass();
   }
 
-  makeFromStorableData(data: StorableData): AbstractDrive {
+  async makeFromStorableData(data: StorableData): Promise<AbstractDrive> {
     const drive = new this.driveClass();
-    drive.configuration = data.config;
-    drive.setCredentials(data.credentials);
+    await drive.init(data.config, data.credentials);
     return drive;
   }
 }

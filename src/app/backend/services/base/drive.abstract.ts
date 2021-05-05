@@ -1,15 +1,18 @@
 import {AbstractDriveHandler} from '../../handlers/base/drive.handler';
-import {AbstractDrive, AbstractDriveMetaData, AbstractFile} from '../../state/base/model.abstract';
+import {AbstractDrive, AbstractFile} from '../../state/base/model.abstract';
+import {YandexMetaData} from '../../state/yandex/yandex.model';
 
 
 export abstract class DriveAbstractService {
   abstract handler: AbstractDriveHandler;
 
-  abstract getMetaData(): Promise<AbstractDriveMetaData>;
+  abstract updateMetaData(): Promise<void>;
 
-  abstract getRoot(fields: Array<string> | undefined, limit: number | undefined, offset: number | undefined): Promise<AbstractFile>;
+  abstract getMetaData(): YandexMetaData | undefined;
 
-  abstract get(identificator: string, fields: Array<string> | undefined, limit: number | undefined, offset: number | undefined): Promise<object>;
+  abstract getRoot(fields?: Array<string> | undefined, limit?: number | undefined, offset?: number | undefined): Promise<AbstractFile>;
+
+  abstract get(identificator: string, fields?: Array<string> | undefined, limit?: number | undefined, offset?: number | undefined): Promise<AbstractFile>;
 
   abstract delete(identificator: string, fields: Array<string> | undefined, permanently: boolean): Promise<object>;
 
@@ -42,5 +45,31 @@ export abstract class DriveAbstractService {
   abstract moveToDrive(identificatorFrom: string, identificatorTo: string, drive: AbstractDrive, overwrite: boolean): void;
 
   abstract copyToDrive(identificatorFrom: string, identificatorTo: string, drive: AbstractDrive, overwrite: boolean): void;
+
+  structMap<T>(map: T, method: CallableFunction, propagate: boolean = false): T {
+    const outputMap: any = {};
+
+    for (const [key, value] of Object.entries(map)) {
+      if (typeof value === 'object' && value !== null && propagate && !Array.isArray(value)) {
+        outputMap[method(key)] = this.structMap(value, method, propagate);
+      } else if (Array.isArray(value)) {
+        outputMap[method(key)] = value?.map(item => typeof item === 'object' ? this.structMap(item, method, propagate) : item);
+      } else {
+        outputMap[method(key)] = value;
+      }
+    }
+    return outputMap;
+  }
+
+  snakeCaseToCamelCase(str: string): string {
+    while(str.startsWith('_')) {
+      str = str.slice(1);
+    }
+    return str.replace(/([-_]\w)/g, letter => letter[1].toUpperCase());
+  }
+
+  camelCaseToSnakeCase(str: string): string {
+    return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+  }
 
 }
