@@ -45,10 +45,10 @@ export class DrivesStoreService {
     this.cachedValue.next(cacheData);
   }
 
-  add(drive: AbstractDrive): void {
+  add(drive: AbstractDrive): boolean {
     const currentValue = this.cachedValue.getValue();
     if (this.checkClone(drive, currentValue)) {
-      return;
+      return false;
     }
     if (!(drive.configuration.type in currentValue)) {
       currentValue[drive.configuration.type] = [];
@@ -56,6 +56,7 @@ export class DrivesStoreService {
     currentValue[drive.configuration.type].push(drive);
     this.cachedValue.next(currentValue);
     this.save();
+    return true;
   }
 
   delete(drive: AbstractDrive): void {
@@ -64,7 +65,10 @@ export class DrivesStoreService {
       return;
     }
     const index = currentValue[drive.configuration.type].indexOf(drive);
-    currentValue[drive.configuration.type] = currentValue[drive.configuration.type].splice(index, 1);
+    currentValue[drive.configuration.type].splice(index, 1);
+    if (currentValue[drive.configuration.type].length === 0) {
+      delete currentValue[drive.configuration.type];
+    }
     this.cachedValue.next(currentValue);
     this.save();
   }
@@ -84,9 +88,8 @@ export class DrivesStoreService {
     if (!(drive.configuration.type in data)) {
       return false;
     }
-    const metaData = drive.driveService.getMetaData();
     return !!data[drive.configuration.type].find(
-      driveStored => driveStored.driveService.getMetaData()?.owner === drive.driveService.getMetaData()?.owner
+      driveStored => driveStored.driveService.getMetaData()?.owner.id === drive.driveService.getMetaData()?.owner.id
     );
   }
 

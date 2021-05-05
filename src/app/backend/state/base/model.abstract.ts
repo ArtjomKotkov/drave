@@ -51,6 +51,8 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
   abstract config: DriveConfig | undefined;
   abstract defaultSettings: AbstractConfig;
 
+  $buffer: BehaviorSubject<AbstractFile[]> = new BehaviorSubject<AbstractFile[]>([]);
+
   get action(): DriveAbstractService {
     return this.driveService;
   }

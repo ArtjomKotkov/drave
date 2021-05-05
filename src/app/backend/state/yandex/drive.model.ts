@@ -2,7 +2,8 @@ import {AbstractDrive, AbstractToken, DriveConfig} from '../base';
 import {YandexAuthService} from '../../services/yandex';
 import {YandexDriveService} from '../../services/yandex';
 import {YandexConfig} from './config.data';
-import {YandexToken} from './yandex.model';
+import {YandexFile, YandexToken} from './yandex.model';
+import {BehaviorSubject} from 'rxjs';
 
 
 export class YandexDrive extends AbstractDrive {
@@ -13,7 +14,6 @@ export class YandexDrive extends AbstractDrive {
   defaultSettings = YandexConfig;
 
   private ready = false;
-
   private $credentials = this.authService.getCredentials();
 
   constructor() {

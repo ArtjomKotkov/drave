@@ -44,7 +44,6 @@ export class YandexDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<YandexFile> {
-    console.log(await this.get(YandexConfig.rootFolder, fields, limit, offset))
     return await this.get(YandexConfig.rootFolder, fields, limit, offset);
   }
 
