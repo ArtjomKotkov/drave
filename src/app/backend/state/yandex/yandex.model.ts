@@ -5,7 +5,6 @@ export interface YandexToken extends AbstractToken {
 
 export interface YandexMetaData extends AbstractDriveMetaData {
   unlimitedAutouploadEnabled?: boolean;
-  maxFileSize?: number;
 }
 
 export interface YandexResponse extends AbstractFile {

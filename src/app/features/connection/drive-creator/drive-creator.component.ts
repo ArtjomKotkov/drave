@@ -33,11 +33,11 @@ export class DriveCreatorComponent implements OnInit {
       return;
     }
     this.factory = this.driveFactoryResolver.getFactory(driveData.type);
-    if (this.factory) {
-      this.drive = this.factory.make();
-      this.drive.configuration = driveData;
-      this.drive.setCredentials(this.tokenData);
+    if (!this.factory) {
+      return;
     }
+    this.drive = this.factory.make();
+    this.drive.init(driveData, this.tokenData);
   }
 
   decodeState(): any | undefined {

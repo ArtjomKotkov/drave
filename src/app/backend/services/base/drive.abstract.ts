@@ -1,5 +1,5 @@
 import {AbstractDriveHandler} from '../../handlers/base/drive.handler';
-import {AbstractDriveMetaData, AbstractFile} from '../../state/base/model.abstract';
+import {AbstractDrive, AbstractDriveMetaData, AbstractFile} from '../../state/base/model.abstract';
 
 
 export abstract class DriveAbstractService {
@@ -19,9 +19,9 @@ export abstract class DriveAbstractService {
 
   abstract getDownloadLink(identificator: string, fields: Array<string> | undefined): Promise<object>;
 
-  abstract copy(identificator_from: string, identificator_to: string, fields: Array<string> | undefined, overwrite: boolean): Promise<object>;
+  abstract copy(identificatorFrom: string, identificatorTo: string, fields: Array<string> | undefined, overwrite: boolean): Promise<object>;
 
-  abstract move(identificator_from: string, identificator_to: string, fields: Array<string> | undefined, overwrite: boolean): Promise<object>;
+  abstract move(identificatorFrom: string, identificatorTo: string, fields: Array<string> | undefined, overwrite: boolean): Promise<object>;
 
   abstract publish(identificator: string, fields: Array<string> | undefined): Promise<object>;
 
@@ -39,8 +39,8 @@ export abstract class DriveAbstractService {
 
   abstract restoreTrash(identificator: string, fields: Array<string> | undefined): Promise<object>;
 
-  abstract moveToDrive(identificator_from: string, identificator_to: string, driveService: DriveAbstractService, overwrite: boolean): void
+  abstract moveToDrive(identificatorFrom: string, identificatorTo: string, drive: AbstractDrive, overwrite: boolean): void;
 
-  abstract copyToDrive(identificator_from: string, identificator_to: string, driveService: DriveAbstractService, overwrite: boolean): void;
+  abstract copyToDrive(identificatorFrom: string, identificatorTo: string, drive: AbstractDrive, overwrite: boolean): void;
 
 }

@@ -1,8 +1,8 @@
-import {AbstractDrive} from '../base';
+import {AbstractDrive, AbstractToken, DriveConfig} from '../base';
 import {YandexAuthService} from '../../services/yandex';
 import {YandexDriveService} from '../../services/yandex';
 import {YandexConfig} from './config.data';
-import {YandexMetaData, YandexToken} from './yandex.model';
+import {YandexToken} from './yandex.model';
 
 
 export class YandexDrive extends AbstractDrive {
@@ -11,7 +11,6 @@ export class YandexDrive extends AbstractDrive {
   driveService = new YandexDriveService();
   config = undefined;
   defaultSettings = YandexConfig;
-  metaData: YandexMetaData | undefined;
 
   private ready = false;
 
@@ -19,15 +18,21 @@ export class YandexDrive extends AbstractDrive {
 
   constructor() {
     super();
-    this.$credentials.subscribe(value => this.rebuild(value));
+
   }
 
-  private rebuild(credentials: YandexToken | undefined): void {
+  async init(config: DriveConfig, credentials: AbstractToken): Promise<void> {
+    await super.init(config, credentials);
+    this.$credentials.subscribe(async value => this.rebuild(value));
+  }
+
+  private async rebuild(credentials: YandexToken | undefined): Promise<void> {
     this.ready = false;
     if (credentials === undefined) {
       return;
     }
     this.driveService.configure(credentials);
+    await this.driveService.getMetaData();
     this.ready = true;
   }
 

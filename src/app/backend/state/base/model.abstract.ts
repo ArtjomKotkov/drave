@@ -2,11 +2,13 @@ import {AbstractConfig} from './config.abstract';
 import {DriveAbstractService} from '../../services/base/drive.abstract';
 import {AbstractAuthService} from '../../services/base/auth.abstract';
 import {YandexMetaData} from '../yandex/yandex.model';
+import {BehaviorSubject} from 'rxjs';
 
 export interface AbstractDriveMetaData {
-  availableSpace: number;
+  totalSpace: number;
   filledSpace: number;
   trashFilledSpace: number;
+  maxFileSize: number;
   owner: {
     id: string;
     login?: string;
@@ -48,14 +50,14 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
   abstract authService: AbstractAuthService;
   abstract config: DriveConfig | undefined;
   abstract defaultSettings: AbstractConfig;
-  metaData: AbstractDriveMetaData | undefined;
 
   get action(): DriveAbstractService {
     return this.driveService;
   }
 
-  setCredentials(credentials: AbstractToken): void {
+  async init(config: DriveConfig, credentials: AbstractToken): Promise<void> {
     this.authService.setCredentials(credentials);
+    this.configuration = config;
   }
 
   get auth(): AbstractAuthService {
@@ -79,10 +81,6 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
       credentials: this.authService.getCredentials().getValue(),
       config: this.configuration
     } as StorableData;
-  }
-
-  get meta(): AbstractDriveMetaData | undefined {
-    return this.metaData;
   }
 
   abstract isReady(): boolean;

@@ -1,73 +1,56 @@
 import {AbstractDriveHandler} from '../base/drive.handler';
 import {YandexToken} from '../../state';
+import {Request} from '../shared/request';
 
 
 export class YandexDriveHandler extends AbstractDriveHandler {
 
   credentials: YandexToken | undefined;
   apiUrl = 'https://cloud-api.yandex.net/v1/disk/';
+  request = new Request();
 
   configure(credentials: YandexToken): void {
-    this.credentials = credentials;
+    this.request.configure({
+      headers: {
+        Authorization: `Bearer ${credentials.access_token}`
+      }
+    });
   }
 
   async getMetaData(): Promise<object> {
-    const response = await fetch(this.apiUrl);
+    const response = await this.request.make(this.apiUrl);
     return await response.json();
-  }
-
-  private createUrl(url: string, data: any): string {
-    const newUrl = new URL(url);
-    Object.keys(data).forEach(key => {
-      if (data[key]) {
-        let value = null;
-        if (key === 'fields') {
-          value = data[key].join(',');
-        } else {
-          value = data[key];
-        }
-        newUrl.searchParams.append(key, value);
-      }
-    });
-    return newUrl.toString();
   }
 
   async get(
     identificator: string,
-    fields: Array<string> | undefined = undefined,
-    limit: number | undefined = undefined,
-    offset: number | undefined = undefined
+    fields?: Array<string> | undefined,
+    limit?: number | undefined,
+    offset?: number | undefined
   ): Promise<object> {
-
-    const url = this.createUrl(
-      this.apiUrl + 'resources',
-      {
-        fields: fields,
-        limit: limit,
-        offset: offset
+    const response = await this.request.make(this.apiUrl + 'resources', {
+      query: {
+        path: identificator,
+        fields: fields?.join(','),
+        limit,
+        offset
       }
-    );
-
-    const response = await fetch(url);
+    });
 
     return await response.json();
   }
 
   async delete(
     identificator: string,
-    fields: Array<string> | undefined,
-    permanently: boolean = false
+    fields?: Array<string> | undefined,
+    permanently?: boolean
   ): Promise<object> {
-
-    const url = this.createUrl(
-      this.apiUrl + 'resources',
-      {
-        fields: fields,
-        permanently: permanently
-      }
-    );
-
-    const response = await fetch(url, {
+    const response = await this.request.make(this.apiUrl + 'resources', {
+      query: {
+        path: identificator,
+        fields: fields?.join(','),
+        permanently
+      },
       method: 'DELETE'
     });
 
@@ -76,20 +59,16 @@ export class YandexDriveHandler extends AbstractDriveHandler {
 
   async update(
     identificator: string,
-    data: object,
-    fields: Array<string> | undefined = undefined
+    dataMap: object,
+    fields?: Array<string> | undefined
   ): Promise<object> {
-
-    const url = this.createUrl(
-      this.apiUrl + 'resources',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url, {
+    const response = await this.request.make(this.apiUrl + 'resources', {
+      query: {
+        path: identificator,
+        fields: fields?.join(','),
+      },
       method: 'PATCH',
-      body: JSON.stringify(data)
+      data: dataMap
     });
 
     return await response.json();
@@ -97,179 +76,167 @@ export class YandexDriveHandler extends AbstractDriveHandler {
 
   async makeDir(
     identificator: string,
-    fields: Array<string> | undefined = undefined
+    fields?: Array<string> | undefined
   ): Promise<object> {
-
-    const url = this.createUrl(
-      this.apiUrl + 'resources',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url, {
-      method: 'PUT'
+    const response = await this.request.make(this.apiUrl + 'resources', {
+      query: {
+        path: identificator,
+        fields: fields?.join(','),
+      },
+      method: 'PUT',
     });
 
     return await response.json();
-  };
+  }
 
   async getDownloadLink(
     identificator: string,
-    fields: Array<string> | undefined = undefined
+    fields?: Array<string> | undefined
   ): Promise<object> {
-
-    const url = this.createUrl(
-      this.apiUrl + 'resources/download',
-      {
-        fields: fields
+    const response = await this.request.make(this.apiUrl + 'resources/donwload', {
+      query: {
+        path: identificator,
+        fields: fields?.join(','),
       }
-    );
-
-    const response = await fetch(url);
+    });
 
     return await response.json();
   }
 
   async copy(
-    identificator_from: string,
-    identificator_to: string,
-    fields: Array<string> | undefined = undefined,
+    identificatorFrom: string,
+    identificatorTo: string,
+    fields?: Array<string> | undefined,
     overwrite: boolean = false): Promise<object> {
-
-    const url = this.createUrl(
-      this.apiUrl + 'resources/copy',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url, {
-      method: 'POST'
-    });
-
-    return await response.json();
-  };
-
-  async move(
-    identificator_from: string,
-    identificator_to: string,
-    fields: Array<string> | undefined = undefined,
-    overwrite: boolean = true
-  ): Promise<object> {
-    const url = this.createUrl(
-      this.apiUrl + 'resources/move',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url, {
+    const response = await this.request.make(this.apiUrl + 'resources/copy', {
+      query: {
+        from: identificatorFrom,
+        path: identificatorTo,
+        fields: fields?.join(','),
+        overwrite
+      },
       method: 'POST'
     });
 
     return await response.json();
   }
 
-  async publish(identificator: string, fields: Array<string> | undefined): Promise<object> {
-    const url = this.createUrl(
-      this.apiUrl + 'resources/publish',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url, {
-      method: 'put'
-    });
-
-    return await response.json();
-  };
-
-  async unpublish(identificator: string, fields: Array<string> | undefined): Promise<object> {
-    const url = this.createUrl(
-      this.apiUrl + 'resources/unpublish',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url, {
-      method: 'PUT'
-    });
-
-    return await response.json();
-  };
-
-  async getUploadLink(identificator: string, fields: Array<string> | undefined): Promise<object> {
-    const url = this.createUrl(
-      this.apiUrl + 'resources/upload',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url);
-
-    return await response.json();
-  };
-
-  async uploadByUrl(identificator: string, url: string, fields: Array<string> | undefined = undefined): Promise<object> {
-    const url_ = this.createUrl(
-      this.apiUrl + 'resources/upload',
-      {
-        fields: fields,
-        url: url
-      }
-    );
-
-    const response = await fetch(url_, {
+  async move(
+    identificatorFrom: string,
+    identificatorTo: string,
+    fields?: Array<string> | undefined,
+    overwrite: boolean = true
+  ): Promise<object> {
+    const response = await this.request.make(this.apiUrl + 'resources/move', {
+      query: {
+        from: identificatorFrom,
+        path: identificatorTo,
+        fields: fields?.join(','),
+        overwrite
+      },
       method: 'POST'
     });
 
     return await response.json();
-  };
+  }
 
-  async clearTrash(identificator: string, fields: Array<string> | undefined = undefined): Promise<object> {
-    const url_ = this.createUrl(
-      this.apiUrl + 'trash/resources',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url_, {
-      method: 'DELETE'
-    });
-
-    return await response.json();
-  };
-
-  async getTrash(identificator: string, fields: Array<string> | undefined): Promise<object> {
-    const url_ = this.createUrl(
-      this.apiUrl + 'trash/resources',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url_);
-
-    return await response.json();
-  };
-
-  async restoreTrash(identificator: string, fields: Array<string> | undefined): Promise<object> {
-    const url_ = this.createUrl(
-      this.apiUrl + 'trash/resources',
-      {
-        fields: fields
-      }
-    );
-
-    const response = await fetch(url_, {
+  async publish(
+    identificator: string,
+    fields?: Array<string> | undefined
+  ): Promise<object> {
+    const response = await this.request.make(this.apiUrl + 'resources/publish', {
+      query: {
+        path: identificator,
+        fields: fields?.join(',')
+      },
       method: 'PUT'
     });
 
     return await response.json();
-  };
+  }
+
+  async unpublish(identificator: string, fields: Array<string> | undefined): Promise<object> {
+    const response = await this.request.make(this.apiUrl + 'resources/unpublish', {
+      query: {
+        path: identificator,
+        fields: fields?.join(',')
+      },
+      method: 'PUT'
+    });
+
+    return await response.json();
+  }
+
+  async getUploadLink(
+    identificator: string,
+    fields?: Array<string> | undefined
+  ): Promise<object> {
+    const response = await this.request.make(this.apiUrl + 'resources/upload', {
+      query: {
+        path: identificator,
+        fields: fields?.join(',')
+      }
+    });
+
+    return await response.json();
+  }
+
+  async uploadByUrl(
+    identificator: string, url: string,
+    fields?: Array<string> | undefined
+  ): Promise<object> {
+    const response = await this.request.make(this.apiUrl + 'resources/upload', {
+      query: {
+        path: identificator,
+        fields: fields?.join(',')
+      },
+      method: 'POST'
+    });
+
+    return await response.json();
+  }
+
+  async clearTrash(
+    identificator: string,
+    fields?: Array<string> | undefined
+  ): Promise<object> {
+    const response = await this.request.make(this.apiUrl + 'trash/resources', {
+      query: {
+        path: identificator,
+        fields: fields?.join(',')
+      },
+      method: 'DELETE'
+    });
+
+    return await response.json();
+  }
+
+  async getTrash(
+    identificator: string,
+    fields?: Array<string> | undefined
+  ): Promise<object> {
+    const response = await this.request.make(this.apiUrl + 'trash/resources', {
+      query: {
+        path: identificator,
+        fields: fields?.join(',')
+      }
+    });
+
+    return await response.json();
+  }
+
+  async restoreTrash(
+    identificator: string,
+    fields?: Array<string> | undefined
+  ): Promise<object> {
+    const response = await this.request.make(this.apiUrl + 'trash/resources', {
+      query: {
+        path: identificator,
+        fields: fields?.join(',')
+      },
+      method: 'PUT'
+    });
+
+    return await response.json();
+  }
 }
