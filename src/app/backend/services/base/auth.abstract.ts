@@ -1,6 +1,3 @@
-import {DriveConfig} from './model.abstract';
-
-
 export abstract class AbstractAuthService {
 
   abstract redirectToAuth(state: string): void;

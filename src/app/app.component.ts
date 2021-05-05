@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DrivesStorage} from './core_services/storage/local.storage';
-import {FactoryResolver} from './backend/factories';
+import {DrivesStoreService} from './backend/services/shared/store.service';
 
 @Component({
   selector: 'dr-root',
@@ -11,11 +10,12 @@ export class AppComponent implements OnInit {
   title = 'drave';
 
   constructor(
-    private drivesStorage: DrivesStorage
-  ) {}
+    private drivesStoreService: DrivesStoreService
+  ) {
+  }
 
   ngOnInit(): void {
-    this.drivesStorage.connect();
+    this.drivesStoreService.connect();
   }
 
 }

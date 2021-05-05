@@ -1,7 +1,8 @@
 import {YandexDriveHandler} from '../../handlers';
 import {DriveAbstractService} from '../base/drive.abstract';
-import {YandexConfig} from './config.data';
-import {YandexFile, YandexResponse, YandexToken} from './yandex.model';
+import {YandexConfig} from '../../state/yandex/config.data';
+import {YandexFile, YandexResponse, YandexToken} from '../../state';
+import {YandexMetaData} from '../../state/yandex/yandex.model';
 
 
 export class YandexDriveService extends DriveAbstractService {
@@ -11,6 +12,16 @@ export class YandexDriveService extends DriveAbstractService {
     this.handler.configure(credentials);
   }
 
+  async getMetaData(): Promise<YandexMetaData> {
+    return {
+      availableSpace: 1,
+      filledSpace: 1,
+      trashFilledSpace: 1,
+      owner: {
+        id: '1'
+      }
+    };
+  }
 
   async getRoot(
     fields: Array<string> | undefined = undefined,

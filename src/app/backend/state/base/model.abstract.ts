@@ -1,6 +1,7 @@
-import {DriveAbstractService} from './drive.abstract';
-import {AbstractAuthService} from './auth.abstract';
 import {AbstractConfig} from './config.abstract';
+import {DriveAbstractService} from '../../services/base/drive.abstract';
+import {AbstractAuthService} from '../../services/base/auth.abstract';
+import {YandexMetaData} from '../yandex/yandex.model';
 
 export interface AbstractDriveMetaData {
   availableSpace: number;
@@ -47,13 +48,11 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
   abstract authService: AbstractAuthService;
   abstract config: DriveConfig | undefined;
   abstract defaultSettings: AbstractConfig;
-  abstract metaData: AbstractDriveMetaData;
+  metaData: AbstractDriveMetaData | undefined;
 
   get action(): DriveAbstractService {
     return this.driveService;
   }
-
-  abstract save(): void;
 
   setCredentials(credentials: AbstractToken): void {
     this.authService.setCredentials(credentials);
@@ -77,9 +76,13 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
 
   get storableData(): StorableData {
     return {
-      credentials: this.authService.getCredentials(),
+      credentials: this.authService.getCredentials().getValue(),
       config: this.configuration
     } as StorableData;
+  }
+
+  get meta(): AbstractDriveMetaData | undefined {
+    return this.metaData;
   }
 
   abstract isReady(): boolean;

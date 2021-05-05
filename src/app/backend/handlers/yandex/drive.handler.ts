@@ -1,10 +1,10 @@
 import {AbstractDriveHandler} from '../base/drive.handler';
-import {YandexToken} from "../../state";
+import {YandexToken} from '../../state';
 
 
 export class YandexDriveHandler extends AbstractDriveHandler {
 
-  credentials: YandexToken;
+  credentials: YandexToken | undefined;
   apiUrl = 'https://cloud-api.yandex.net/v1/disk/';
 
   configure(credentials: YandexToken): void {
@@ -16,7 +16,7 @@ export class YandexDriveHandler extends AbstractDriveHandler {
     return await response.json();
   }
 
-  private createUrl(url: string, data: any) {
+  private createUrl(url: string, data: any): string {
     const newUrl = new URL(url);
     Object.keys(data).forEach(key => {
       if (data[key]) {

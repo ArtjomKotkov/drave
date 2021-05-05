@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FactoryResolver} from '../../../backend/factories';
 import {AbstractDrive, YandexToken} from '../../../backend/state';
 import {AbstractDriveFactory} from '../../../backend/factories/base/drive-factory.abstract';
+import {DrivesStoreService} from '../../../backend/services/shared/store.service';
 
 
 @Component({
@@ -11,7 +12,10 @@ import {AbstractDriveFactory} from '../../../backend/factories/base/drive-factor
 })
 export class DriveCreatorComponent implements OnInit {
 
-  constructor(private driveFactoryResolver: FactoryResolver) {
+  constructor(
+    private driveFactoryResolver: FactoryResolver,
+    private drivesStoreService: DrivesStoreService
+  ) {
     this.tokenData = this.extractData();
   }
 
@@ -58,7 +62,7 @@ export class DriveCreatorComponent implements OnInit {
     if (!this.drive) {
       return;
     }
-    this.drive.save();
+    this.drivesStoreService.add(this.drive);
   }
 
 }

@@ -5,8 +5,9 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {ReactiveFormsModule} from '@angular/forms';
 
-import {DrivesStorage} from './core_services/storage/local.storage';
 import {FactoryResolver} from './backend/factories';
+import {DrivesStoreService} from './backend/services/shared/store.service';
+import {LocalStorageService} from './core_services/storage/local.storage';
 
 
 @NgModule({
@@ -18,7 +19,11 @@ import {FactoryResolver} from './backend/factories';
     AppRoutingModule,
     ReactiveFormsModule
   ],
-  providers: [DrivesStorage, FactoryResolver],
+  providers: [
+    FactoryResolver,
+    DrivesStoreService,
+    LocalStorageService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

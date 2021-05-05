@@ -1,9 +1,11 @@
 import {AbstractDriveHandler} from '../../handlers/base/drive.handler';
-import {AbstractFile} from './model.abstract';
+import {AbstractDriveMetaData, AbstractFile} from '../../state/base/model.abstract';
 
 
 export abstract class DriveAbstractService {
   abstract handler: AbstractDriveHandler;
+
+  abstract getMetaData(): Promise<AbstractDriveMetaData>;
 
   abstract getRoot(fields: Array<string> | undefined, limit: number | undefined, offset: number | undefined): Promise<AbstractFile>;
 
