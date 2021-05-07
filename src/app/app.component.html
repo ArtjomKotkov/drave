@@ -13,11 +13,6 @@
         <br>
         <button (click)="delete(drive)">DELETE</button>
         <br>
-        <div>
-          <div *ngFor="let item of drive.$buffer | async">
-            <span>{{item.name}} {{item.type}}</span>
-          </div>
-        </div>
       </div>
     </div>
 

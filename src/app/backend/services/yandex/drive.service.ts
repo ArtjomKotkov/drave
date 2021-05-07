@@ -4,12 +4,16 @@ import {YandexConfig} from '../../state/yandex/config.data';
 import {AbstractDrive, YandexFile, YandexResponse, YandexToken} from '../../state';
 import {YandexMetaData} from '../../state/yandex/yandex.model';
 import {BehaviorSubject} from 'rxjs';
-import {snakeCaseToCamelCase, structMap} from '../../shared';
+import {snakeCaseToCamelCase, Stack, structMap} from '../../shared';
 
 
 export class YandexDriveService extends DriveAbstractService {
   handler: YandexDriveHandler = new YandexDriveHandler();
   private metaData: BehaviorSubject<YandexMetaData | undefined> = new BehaviorSubject<YandexMetaData | undefined>(undefined);
+
+  constructor(private callStack: Stack<string>) {
+    super();
+  }
 
   configure(credentials: YandexToken): void {
     this.handler.configure(credentials);
@@ -45,6 +49,7 @@ export class YandexDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<YandexFile> {
+    this.callStack.clear();
     return await this.get(YandexConfig.rootFolder, fields, limit, offset);
   }
 
@@ -54,6 +59,7 @@ export class YandexDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<YandexFile> {
+    this.callStack.add(identificator);
     return structMap(
       await this.handler.get(identificator, fields, limit, offset) as YandexFile,
       snakeCaseToCamelCase,

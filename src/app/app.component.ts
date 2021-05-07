@@ -32,7 +32,6 @@ export class AppComponent implements OnInit {
 
   async load(drive: AbstractDrive, value?: string): Promise<void> {
     const result = (value ? await drive.driveService.get(value) : await drive.driveService.getRoot()) as YandexFile;
-    drive.$buffer.next(result.embedded?.items ? result.embedded?.items : []);
   }
 
   async delete(drive: AbstractDrive): Promise<void> {

@@ -3,6 +3,7 @@ import {DriveAbstractService} from '../../services/base/drive.abstract';
 import {AbstractAuthService} from '../../services/base/auth.abstract';
 import {YandexMetaData} from '../yandex/yandex.model';
 import {BehaviorSubject} from 'rxjs';
+import {Stack} from '../../shared';
 
 export interface AbstractDriveMetaData {
   totalSpace: number;
@@ -52,7 +53,7 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
   abstract config: DriveConfig | undefined;
   abstract defaultSettings: AbstractConfig;
 
-  $buffer: BehaviorSubject<AbstractFile[]> = new BehaviorSubject<AbstractFile[]>([]);
+  callStack: Stack<string> = new Stack<string>();
 
   get action(): DriveAbstractService {
     return this.driveService;

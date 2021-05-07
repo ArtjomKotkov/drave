@@ -9,7 +9,7 @@ import {BehaviorSubject} from 'rxjs';
 export class YandexDrive extends AbstractDrive {
 
   authService = new YandexAuthService();
-  driveService = new YandexDriveService();
+  driveService = new YandexDriveService(this.callStack);
   config = undefined;
   defaultSettings = YandexConfig;
 
