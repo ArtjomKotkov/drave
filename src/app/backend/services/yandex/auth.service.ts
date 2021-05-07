@@ -2,6 +2,7 @@ import {AbstractAuthService} from '../base/auth.abstract';
 import {YandexAuthHandler} from '../../handlers';
 import {YandexToken} from '../../state';
 import {BehaviorSubject} from 'rxjs';
+import {snakeCaseToCamelCase, structMap} from '../../shared';
 
 
 export class YandexAuthService extends AbstractAuthService {
@@ -21,10 +22,15 @@ export class YandexAuthService extends AbstractAuthService {
     return this.credentials;
   }
 
-  updateToken(): void {
+  async updateToken(): Promise<YandexToken | undefined> {
+    const refreshToken = this.credentials.getValue()?.refreshToken;
+    if (!refreshToken) {
+      return ;
+    }
+    return structMap(
+      await this.authHandler.updateToken(refreshToken) as YandexToken,
+      snakeCaseToCamelCase,
+      true
+    );
   }
-
-  disconnect(): void {
-  }
-
 }

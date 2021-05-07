@@ -4,6 +4,7 @@ import {YandexConfig} from '../../state/yandex/config.data';
 import {AbstractDrive, YandexFile, YandexResponse, YandexToken} from '../../state';
 import {YandexMetaData} from '../../state/yandex/yandex.model';
 import {BehaviorSubject} from 'rxjs';
+import {snakeCaseToCamelCase, structMap} from '../../shared';
 
 
 export class YandexDriveService extends DriveAbstractService {
@@ -53,9 +54,9 @@ export class YandexDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<YandexFile> {
-    return this.structMap(
+    return structMap(
       await this.handler.get(identificator, fields, limit, offset) as YandexFile,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
   }
@@ -65,9 +66,9 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined,
     permanently: boolean = false
   ): Promise<YandexResponse> {
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.delete(identificator, fields, permanently) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();
@@ -80,9 +81,9 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined
   ): Promise<YandexFile> {
 
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.update(identificator, data, fields) as YandexFile,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();
@@ -93,9 +94,9 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    return this.structMap(
+    return structMap(
       await this.handler.makeDir(identificator, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
   }
@@ -104,9 +105,9 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    return this.structMap(
+    return structMap(
       await this.handler.getDownloadLink(identificator, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
   }
@@ -117,9 +118,9 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined,
     overwrite: boolean = false
   ): Promise<YandexResponse> {
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.copy(identificatorFrom, identificatorTo, fields, overwrite) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();
@@ -132,9 +133,9 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined,
     overwrite: boolean = false
   ): Promise<YandexResponse> {
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.move(identificatorFrom, identificatorTo, fields, overwrite) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();
@@ -145,9 +146,9 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.publish(identificator, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();
@@ -158,9 +159,9 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.unpublish(identificator, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();
@@ -180,9 +181,9 @@ export class YandexDriveService extends DriveAbstractService {
     url: string,
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    return this.structMap(
+    return structMap(
       await this.handler.uploadByUrl(identificator, url, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
   }
@@ -190,9 +191,9 @@ export class YandexDriveService extends DriveAbstractService {
   async clearTrash(
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.clearTrash(YandexConfig.trashRoot, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();
@@ -203,9 +204,9 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.clearTrash(identificator, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();
@@ -216,9 +217,9 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    return this.structMap(
+    return structMap(
       await this.handler.getTrash(identificator, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
   }
@@ -227,9 +228,9 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<YandexResponse> {
-    const response = this.structMap(
+    const response = structMap(
       await this.handler.restoreTrash(identificator, fields) as YandexResponse,
-      this.snakeCaseToCamelCase,
+      snakeCaseToCamelCase,
       true
     );
     await this.updateMetaData();

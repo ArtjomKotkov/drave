@@ -22,9 +22,10 @@ export interface StorableData {
 }
 
 export interface AbstractToken {
-  access_token: string;
-  expires_in: string;
-  token_type: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: string;
+  tokenType: string;
   state?: string;
   scope: string;
 }

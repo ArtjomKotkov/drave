@@ -8,7 +8,5 @@ export abstract class AbstractAuthService {
 
   abstract updateToken(): void;
 
-  abstract disconnect(): void;
-
 }
 
