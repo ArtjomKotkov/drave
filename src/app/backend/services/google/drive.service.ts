@@ -1,26 +1,26 @@
-import {YandexDriveHandler} from '../../handlers';
 import {DriveAbstractService} from '../base/drive.abstract';
-import {YandexConfig} from '../../state/yandex/config.data';
-import {AbstractDrive, YandexToken} from '../../state';
-import {YandexMetaData} from '../../state/yandex/yandex.model';
+import {GoogleConfig} from '../../state/yandex/config.data';
+import {AbstractDrive, GoogleToken} from '../../state';
 import {BehaviorSubject} from 'rxjs';
 import {Stack} from '../../shared';
 import {AbstractFile} from '../../state/base/model.abstract';
+import {GoogleDriveHandler} from '../../handlers/google/drive.handler';
+import {GoogleMetaData} from '../../state/google/google.model';
 
 
-export class YandexDriveService extends DriveAbstractService {
-  handler: YandexDriveHandler = new YandexDriveHandler();
-  private metaData: BehaviorSubject<YandexMetaData | undefined> = new BehaviorSubject<YandexMetaData | undefined>(undefined);
+export class GoogleDriveService extends DriveAbstractService {
+  handler: GoogleDriveHandler = new GoogleDriveHandler();
+  private metaData: BehaviorSubject<GoogleMetaData | undefined> = new BehaviorSubject<GoogleMetaData | undefined>(undefined);
 
   constructor(private callStack: Stack<string>) {
     super();
   }
 
-  configure(credentials: YandexToken): void {
+  configure(credentials: GoogleToken): void {
     this.handler.configure(credentials);
   }
 
-  getMetaData(): YandexMetaData | undefined {
+  getMetaData(): GoogleMetaData | undefined {
     return this.metaData.getValue();
   }
 
@@ -30,17 +30,16 @@ export class YandexDriveService extends DriveAbstractService {
     this.metaData.next(metaData);
   }
 
-  private parseMetaData(response: any): YandexMetaData {
+  private parseMetaData(response: any): GoogleMetaData {
     return {
-      totalSpace: response.total_space,
-      filledSpace: response.used_space,
-      maxFileSize: response.max_file_size,
-      trashFilledSpace: response.trash_size,
-      unlimitedAutouploadEnabled: response.unlimited_autoupload_enabled,
+      totalSpace: response.storageQuota.limit,
+      filledSpace: response.storageQuota.usage,
+      maxFileSize: response.maxUploadSize,
+      trashFilledSpace: response.storageQuota.usageInDriveTrash,
       owner: {
-        id: response.user.uid,
-        login: response.user.login,
-        displayName: response.user.display_name
+        id: response.user.permissionId,
+        login: response.user.emailAddress,
+        displayName: response.user.displayName
       }
     };
   }
@@ -51,17 +50,29 @@ export class YandexDriveService extends DriveAbstractService {
     offset?: number | undefined
   ): Promise<AbstractFile> {
     this.callStack.clear();
-    return await this.get(YandexConfig.rootFolder, fields, limit, offset);
+    return await this.get(GoogleConfig.rootFolder, fields, limit, offset);
   }
 
   async get(
     identificator: string,
-    fields?: Array<string> | undefined,
+    fields?: Array<string>,
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<AbstractFile> {
     this.callStack.add(identificator);
-    return this.yandexDataToFile(await this.handler.get(identificator, fields, limit, offset)) as AbstractFile;
+    const file = this.googleDataToFile(await this.handler.get(identificator, ['*'], limit, offset)) as AbstractFile;
+    if (file && file.isDir) {
+      const innerFiles = await this.handler.get(undefined, ['*'], undefined, undefined, {
+        q: `'${file.id}' in parents`
+      }) as any;
+      if (innerFiles) {
+        const files = innerFiles.files as AbstractFile[];
+        file.nested = {};
+        file.nested.files = files.map(data => this.googleDataToFile(data) as AbstractFile);
+      }
+    }
+    console.log(file)
+    return file;
   }
 
   async delete(
@@ -69,7 +80,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined,
     permanently: boolean = false
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.delete(identificator, fields, permanently)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.delete(identificator, fields, permanently)) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -79,7 +90,7 @@ export class YandexDriveService extends DriveAbstractService {
     data: object,
     fields?: Array<string> | undefined
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.update(identificator, data, fields)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.update(identificator, data, fields)) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -89,7 +100,7 @@ export class YandexDriveService extends DriveAbstractService {
     name: string,
     fields?: Array<string>
   ): Promise<AbstractFile> {
-    return this.yandexDataToFile(await this.handler.makeDir(name, identificator, fields)) as AbstractFile;
+    return this.googleDataToFile(await this.handler.makeDir(name, identificator, fields)) as AbstractFile;
   }
 
   async getDownloadLink(
@@ -105,7 +116,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined,
     overwrite: boolean = false
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.copy(identificatorFrom, identificatorTo, fields, overwrite)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.copy(identificatorFrom, identificatorTo, fields, overwrite)) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -116,7 +127,7 @@ export class YandexDriveService extends DriveAbstractService {
     fields?: Array<string> | undefined,
     overwrite: boolean = false
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.move(identificatorFrom, identificatorTo, fields, overwrite)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.move(identificatorFrom, identificatorTo, fields, overwrite)) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -125,7 +136,7 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.publish(identificator, fields)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.publish(identificator, fields)) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -134,7 +145,7 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.unpublish(identificator, fields)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.unpublish(identificator, fields)) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -142,7 +153,7 @@ export class YandexDriveService extends DriveAbstractService {
   async clearTrash(
     fields?: Array<string> | undefined
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.clearTrash(YandexConfig.trashRoot, fields)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.clearTrash()) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -151,7 +162,7 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.clearTrash(identificator, fields)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.clearTrash()) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -160,14 +171,14 @@ export class YandexDriveService extends DriveAbstractService {
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<AbstractFile> {
-    return this.yandexDataToFile(this.handler.getTrash(identificator, fields)) as AbstractFile;
+    return this.googleDataToFile(this.handler.getTrash()) as AbstractFile;
   }
 
   async restoreTrash(
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.restoreTrash(identificator, fields)) as AbstractFile;
+    const response = this.googleDataToFile(await this.handler.restoreTrash(identificator, fields)) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -199,34 +210,23 @@ export class YandexDriveService extends DriveAbstractService {
     await drive.driveService.updateMetaData();
   }
 
-  private yandexDataToFile(data: any, getNested: boolean = true): AbstractFile {
+  private googleDataToFile(data: any): AbstractFile {
 
     function getFileData(dataN: any): AbstractFile {
       return {
-        id: dataN.path,
+        id: dataN.id,
         name: dataN.name,
-        mimeType: dataN.mime_type,
+        mimeType: dataN.mimeType,
         size: dataN.size,
-        created: dataN.created,
-        modified: dataN.modified,
-        isDir: !!dataN._embedded?.items,
-        type: dataN.type,
+        created: dataN.createdTime,
+        modified: dataN.modifiedTime,
+        isDir: dataN.mimeType === 'application/vnd.google-apps.folder',
+        type: '',
+        trashed: dataN.trashed
       };
     }
 
-    const output = getFileData(data);
-
-    if (getNested && data._embedded && data._embedded.items) {
-      output.nested = {
-        limit: data._embedded.limit,
-        offset: data._embedded.offset,
-        files: []
-      };
-      for (const item of data._embedded.items) {
-        output.nested?.files?.push(getFileData(item));
-      }
-    }
-    return output;
+    return getFileData(data);
   }
 
 }

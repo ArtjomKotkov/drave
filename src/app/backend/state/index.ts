@@ -1,2 +1,3 @@
-export * from "./yandex";
-export * from "./base";
+export * from './yandex';
+export * from './google';
+export * from './base';

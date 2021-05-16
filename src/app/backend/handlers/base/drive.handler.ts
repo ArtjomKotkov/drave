@@ -17,38 +17,37 @@ export abstract class AbstractDriveHandler {
     permanently: boolean
   ): object;
 
-  abstract update(identificator: string, data: object, fields: Array<string> | undefined): object;
+  abstract update(identificator: string, data: object, fields?: Array<string>): object;
 
-  abstract makeDir(identificator: string, fields: Array<string> | undefined): object;
+  abstract makeDir(name: string, identificator: string, fields?: Array<string>): object;
 
-  abstract getDownloadLink(identificator: string, fields: Array<string> | undefined): object;
+  abstract getDownloadLink(identificator: string, fields?: Array<string>): object;
 
   abstract copy(
-    identificator_from: string,
-    identificator_to: string,
+    identificatorFrom: string,
+    identificatorTo: string,
     fields: Array<string> | undefined,
     overwrite: boolean
   ): object;
 
   abstract move(
-    identificator_from: string,
-    identificator_to: string,
+    identificatorFrom: string,
+    identificatorTo: string,
     fields: Array<string> | undefined,
     overwrite: boolean
   ): object;
 
-  abstract publish(identificator: string, fields: Array<string> | undefined): object;
+  abstract publish(identificator: string, fields?: Array<string>): object;
 
-  abstract unpublish(identificator: string, fields: Array<string> | undefined): object;
+  abstract unpublish(identificator: string, fields?: Array<string>): object;
 
-  abstract getUploadLink(identificator: string, fields: Array<string> | undefined): object;
+  abstract clearTrash(identificator?: string, fields?: Array<string>): object;
 
-  abstract uploadByUrl(identificator: string, url: string, fields: Array<string> | undefined): object;
+  abstract getTrash(identificator?: string, fields?: Array<string>): object;
 
-  abstract clearTrash(identificator: string, fields: Array<string> | undefined): object;
+  abstract restoreTrash(identificator: string, fields?: Array<string>): object;
 
-  abstract getTrash(identificator: string, fields: Array<string> | undefined): object;
+  abstract download(identificator: string): Promise<Blob>;
 
-  abstract restoreTrash(identificator: string, fields: Array<string> | undefined): object;
-
+  abstract upload(identificator: string, file: Blob): object;
 }

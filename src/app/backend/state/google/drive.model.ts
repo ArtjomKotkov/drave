@@ -1,17 +1,17 @@
 import {AbstractDrive, AbstractToken, DriveConfig} from '../base';
-import {YandexAuthService} from '../../services/yandex';
-import {YandexDriveService} from '../../services/yandex';
-import {YandexConfig} from './config.data';
-import {YandexToken} from './yandex.model';
+import {GoogleToken} from './google.model';
+import {GoogleConfig} from '../yandex/config.data';
+import {GoogleAuthService} from '../../services/google/auth.service';
+import {GoogleDriveService} from '../../services/google/drive.service';
 import {snakeCaseToCamelCase, structMap} from '../../shared';
 
 
-export class YandexDrive extends AbstractDrive {
+export class GoogleDrive extends AbstractDrive {
 
-  authService = new YandexAuthService();
-  driveService = new YandexDriveService(this.callStack);
+  authService = new GoogleAuthService();
+  driveService = new GoogleDriveService(this.callStack);
   config = undefined;
-  defaultSettings = YandexConfig;
+  defaultSettings = GoogleConfig;
 
   private ready = false;
   private $credentials = this.authService.getCredentials();
@@ -30,7 +30,7 @@ export class YandexDrive extends AbstractDrive {
     this.$credentials.subscribe(async value => this.rebuild(value));
   }
 
-  private async rebuild(credentials: YandexToken | undefined): Promise<void> {
+  private async rebuild(credentials: GoogleToken | undefined): Promise<void> {
     this.ready = false;
     if (credentials === undefined) {
       return;

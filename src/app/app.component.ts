@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DrivesStoreService} from './backend/services/shared/store.service';
-import {AbstractDrive, YandexFile} from './backend/state';
+import {AbstractDrive} from './backend/state';
 
 
 @Component({
@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
   }
 
   async load(drive: AbstractDrive, value?: string): Promise<void> {
-    const result = (value ? await drive.driveService.get(value) : await drive.driveService.getRoot()) as YandexFile;
+    const result = (value ? await drive.driveService.get(value) : await drive.driveService.getRoot()) as AbstractFile;
   }
 
   async delete(drive: AbstractDrive): Promise<void> {
@@ -41,6 +41,7 @@ export class AppComponent implements OnInit {
 
 
 import {Pipe, PipeTransform} from '@angular/core';
+import {AbstractFile} from './backend/state/base/model.abstract';
 
 @Pipe({name: 'keyValue', pure: false})
 export class KeyValue implements PipeTransform {

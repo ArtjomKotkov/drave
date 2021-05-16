@@ -32,6 +32,20 @@ export interface AbstractToken {
 }
 
 export interface AbstractFile {
+  id: string;
+  name: string;
+  mimeType?: string;
+  size?: string;
+  created?: string;
+  modified?: string;
+  isDir?: boolean;
+  type?: string;
+  nested?: {
+    limit?: number;
+    offset?: number;
+    files?: AbstractFile[]
+  };
+  trashed?: boolean;
 }
 
 export interface AbstractResponse {

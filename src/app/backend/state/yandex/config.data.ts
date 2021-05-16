@@ -6,3 +6,9 @@ export const YandexConfig: AbstractConfig  = {
   trashRoot: '/',
   baseColor: '#E61400'
 };
+
+export const GoogleConfig: AbstractConfig  = {
+  rootFolder: 'root',
+  trashRoot: '',
+  baseColor: '#FFD04B'
+};

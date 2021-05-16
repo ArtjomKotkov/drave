@@ -75,12 +75,13 @@ export class YandexDriveHandler extends AbstractDriveHandler {
   }
 
   async makeDir(
+    name: string,
     identificator: string,
     fields?: Array<string> | undefined
   ): Promise<object> {
     const response = await this.request.make(this.apiUrl + 'resources', {
       query: {
-        path: identificator,
+        path: identificator.endsWith('/') ? identificator + name : identificator + '/' + name,
         fields: fields?.join(','),
       },
       method: 'PUT',
@@ -92,7 +93,7 @@ export class YandexDriveHandler extends AbstractDriveHandler {
   async getDownloadLink(
     identificator: string,
     fields?: Array<string> | undefined
-  ): Promise<object> {
+  ): Promise<any> {
     const response = await this.request.make(this.apiUrl + 'resources/donwload', {
       query: {
         path: identificator,
@@ -167,39 +168,46 @@ export class YandexDriveHandler extends AbstractDriveHandler {
     return await response.json();
   }
 
-  async getUploadLink(
+  async download(
+    identificator: string
+  ): Promise<Blob> {
+    const downloadLink = await this.getDownloadLink(identificator);
+    const response = await this.request.make(downloadLink);
+
+    return await response.blob();
+  }
+
+  private async getUploadLink(
     identificator: string,
     fields?: Array<string> | undefined
-  ): Promise<object> {
+  ): Promise<any> {
     const response = await this.request.make(this.apiUrl + 'resources/upload', {
       query: {
         path: identificator,
-        fields: fields?.join(',')
+        fields: fields?.join(','),
       }
     });
 
     return await response.json();
   }
 
-  async uploadByUrl(
-    identificator: string, url: string,
-    fields?: Array<string> | undefined
+  async upload(
+    identificator: string,
+    file: Blob
   ): Promise<object> {
-    const response = await this.request.make(this.apiUrl + 'resources/upload', {
-      query: {
-        path: identificator,
-        fields: fields?.join(',')
-      },
-      method: 'POST'
-    });
 
-    return await response.json();
+    const uploadLink = await this.getDownloadLink(identificator);
+
+    return await this.request.make(uploadLink, {
+      headers: {
+        'Content-Type': file.type,
+        'Content-Length': String(file.size)
+      },
+      data: file
+    });
   }
 
-  async clearTrash(
-    identificator: string,
-    fields?: Array<string> | undefined
-  ): Promise<object> {
+  async clearTrash(identificator: string, fields?: Array<string>): Promise<object> {
     const response = await this.request.make(this.apiUrl + 'trash/resources', {
       query: {
         path: identificator,

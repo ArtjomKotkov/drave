@@ -5,6 +5,7 @@ export interface RequestParams {
   data?: any;
   headers?: { [key: string]: string };
   query?: QueryType;
+  formData?: FormData;
 }
 
 export interface RequestConfig {
@@ -21,13 +22,12 @@ export class Request {
 
   async make(url: string, params?: RequestParams): Promise<Response> {
     const urlWithQuery = this.createUrl(url, params?.query);
-
     return await fetch(
       urlWithQuery,
       {
         method: params?.method ? params?.method : 'GET',
         headers: {...params?.headers, ...this.coreHeaders},
-        body: JSON.stringify(params?.data)
+        body: params?.formData ? params?.formData : JSON.stringify(params?.data)
       }
     );
   }

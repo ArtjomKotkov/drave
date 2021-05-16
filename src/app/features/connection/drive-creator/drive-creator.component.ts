@@ -3,6 +3,7 @@ import {FactoryResolver} from '../../../backend/factories';
 import {AbstractDrive, YandexToken} from '../../../backend/state';
 import {AbstractDriveFactory} from '../../../backend/factories/base/drive-factory.abstract';
 import {DrivesStoreService} from '../../../backend/services/shared/store.service';
+import {snakeCaseToCamelCase, structMap} from '../../../backend/shared';
 
 
 @Component({
@@ -48,14 +49,19 @@ export class DriveCreatorComponent implements OnInit {
   }
 
   extractData(): YandexToken {
-    const hash = location.href.split('#')[1];
-    return hash.split('&').reduce((obj, item) => {
+    let hash: string | object = location.href.split('#')[1];
+    hash = hash.split('&').reduce((obj, item) => {
       const keyValue = item.split('=');
       return {
         ...obj,
         [keyValue[0]]: keyValue[1]
       };
-    }, {}) as YandexToken;
+    }, {}) as object;
+    return structMap(
+      hash,
+      snakeCaseToCamelCase,
+      true
+    ) as YandexToken;
   }
 
   save(): void {
