@@ -1,6 +1,7 @@
 import {AbstractConfig} from './config.abstract';
 import {DriveAbstractService} from '../../services/base/drive.abstract';
 import {Stack} from '../../shared';
+import {Subject} from 'rxjs';
 
 export interface AbstractDriveMetaData {
   totalSpace: number;
@@ -60,6 +61,8 @@ export abstract class AbstractDrive {
   abstract defaultSettings: AbstractConfig;
 
   callStack: Stack<string> = new Stack<string>();
+
+  $changed = new Subject();
 
   get action(): DriveAbstractService {
     return this.driveService;

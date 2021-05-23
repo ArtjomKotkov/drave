@@ -40,7 +40,13 @@ export class DrivesStoreService {
       if (!factory) {
         return;
       }
-      cacheData[driveType] = await Promise.all(driveData.map(async driveMap => await factory.makeFromStorableData(driveMap)));
+      cacheData[driveType] = await Promise.all(driveData.map(async driveMap => {
+        const drive = await factory.makeFromStorableData(driveMap);
+        drive.$changed.subscribe(_ => {
+          this.save();
+        });
+        return drive;
+      }));
     }
     this.cachedValue.next(cacheData);
   }

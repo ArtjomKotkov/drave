@@ -5,7 +5,7 @@ import {YandexConfig} from './config.data';
 
 export class YandexDrive extends AbstractDrive {
 
-  driveService = new YandexDriveService(this.callStack);
+  driveService = new YandexDriveService(this.callStack, this.$changed);
   config = undefined;
   defaultSettings = YandexConfig;
 
