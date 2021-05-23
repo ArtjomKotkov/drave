@@ -3,18 +3,18 @@ import {AbstractDriveFactory} from './base/drive-factory.abstract';
 import {Injectable} from '@angular/core';
 import {GoogleDrive} from '../state/google/drive.model';
 
-type driveFactories = YandexDriveFactory | GoogleDriveFactory;
+export type DriveFactories = YandexDriveFactory | GoogleDriveFactory;
 
 @Injectable({
   providedIn: 'root'
 })
 export class FactoryResolver {
-  private factoryMap: { [key: string]: driveFactories } = {
+  private factoryMap: { [key: string]: DriveFactories } = {
     yandex: new YandexDriveFactory(),
     google: new GoogleDriveFactory()
   };
 
-  getFactory(name: string): driveFactories | undefined {
+  getFactory(name: string): DriveFactories | undefined {
     return this.factoryMap[name];
   }
 

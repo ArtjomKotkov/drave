@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FactoryResolver} from '../../../backend/factories';
-import {AbstractDrive, YandexToken} from '../../../backend/state';
-import {AbstractDriveFactory} from '../../../backend/factories/base/drive-factory.abstract';
+import {AbstractDrive, DriveConfig} from '../../../backend/state';
 import {DrivesStoreService} from '../../../backend/services/shared/store.service';
-import {snakeCaseToCamelCase, structMap} from '../../../backend/shared';
+import {DriveFactories} from '../../../backend/factories/drive.factory';
 
 
 @Component({
@@ -17,19 +16,17 @@ export class DriveCreatorComponent implements OnInit {
     private driveFactoryResolver: FactoryResolver,
     private drivesStoreService: DrivesStoreService
   ) {
-    this.tokenData = this.extractData();
   }
 
-  tokenData: YandexToken;
-  factory: AbstractDriveFactory | undefined;
+  factory: DriveFactories | undefined;
   drive: AbstractDrive | undefined;
 
-  ngOnInit(): void {
-    this.createDrive();
+  async ngOnInit(): Promise<void> {
+    await this.createDrive();
   }
 
-  createDrive(): void {
-    const driveData = this.decodeState();
+  async createDrive(): Promise<void> {
+    const driveData = this.extractState();
     if (!driveData) {
       return;
     }
@@ -38,30 +35,14 @@ export class DriveCreatorComponent implements OnInit {
       return;
     }
     this.drive = this.factory.make();
-    this.drive.init(driveData, this.tokenData);
+    await this.drive.init(driveData);
   }
 
-  decodeState(): any | undefined {
-    if (!this.tokenData.state) {
-      return;
-    }
-    return JSON.parse(decodeURI(this.tokenData.state));
-  }
-
-  extractData(): YandexToken {
-    let hash: string | object = location.href.split('#')[1];
-    hash = hash.split('&').reduce((obj, item) => {
-      const keyValue = item.split('=');
-      return {
-        ...obj,
-        [keyValue[0]]: keyValue[1]
-      };
-    }, {}) as object;
-    return structMap(
-      hash,
-      snakeCaseToCamelCase,
-      true
-    ) as YandexToken;
+  extractState(): DriveConfig | undefined {
+    const queryString = window.location.search;
+    const params = new URLSearchParams(queryString);
+    const state = params.get('state');
+    return state ? JSON.parse(state) as DriveConfig : undefined;
   }
 
   save(): void {

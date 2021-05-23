@@ -1,8 +1,5 @@
 import {AbstractConfig} from './config.abstract';
 import {DriveAbstractService} from '../../services/base/drive.abstract';
-import {AbstractAuthService} from '../../services/base/auth.abstract';
-import {YandexMetaData} from '../yandex/yandex.model';
-import {BehaviorSubject} from 'rxjs';
 import {Stack} from '../../shared';
 
 export interface AbstractDriveMetaData {
@@ -18,11 +15,11 @@ export interface AbstractDriveMetaData {
 }
 
 export interface StorableData {
-  credentials: AbstractToken;
+  credentials: Credentials;
   config: DriveConfig;
 }
 
-export interface AbstractToken {
+export interface Credentials {
   accessToken: string;
   refreshToken: string;
   expiresIn: string;
@@ -57,13 +54,8 @@ export interface DriveConfig {
   type: string;
 }
 
-
-interface AbstractDriveInterface {
-}
-
-export abstract class AbstractDrive implements AbstractDriveInterface {
+export abstract class AbstractDrive {
   abstract driveService: DriveAbstractService;
-  abstract authService: AbstractAuthService;
   abstract config: DriveConfig | undefined;
   abstract defaultSettings: AbstractConfig;
 
@@ -73,13 +65,8 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
     return this.driveService;
   }
 
-  async init(config: DriveConfig, credentials: AbstractToken): Promise<void> {
-    this.authService.setCredentials(credentials);
+  async init(config: DriveConfig, credentials?: Credentials): Promise<void> {
     this.configuration = config;
-  }
-
-  get auth(): AbstractAuthService {
-    return this.authService;
   }
 
   get configuration(): DriveConfig {
@@ -96,11 +83,9 @@ export abstract class AbstractDrive implements AbstractDriveInterface {
 
   get storableData(): StorableData {
     return {
-      credentials: this.authService.getCredentials().getValue(),
+      credentials: this.driveService.authService.getCredentials().getValue(),
       config: this.configuration
     } as StorableData;
   }
-
-  abstract isReady(): boolean;
 
 }

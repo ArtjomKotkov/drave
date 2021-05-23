@@ -1,27 +1,39 @@
 import {environment} from '../../../../environments/environment';
-import {YandexToken} from '../../state';
+import {Credentials} from '../../state';
 import {Request} from '../shared/request';
+import {AuthHandler} from '../base/auth.handler';
 
 
-export class YandexAuthHandler {
-  yandexApiSettings = environment.application.yandex;
+export class YandexAuthHandler extends AuthHandler{
+  config = environment.application.yandex;
   request = new Request();
 
   getAuthUrl(state: string): string {
-    return `${this.yandexApiSettings.rootUrl}authorize?response_type=token&client_id=${this.yandexApiSettings.client_id}&redirect_uri=${this.yandexApiSettings.redirect_uri}&force_confirm=${this.yandexApiSettings.force_confirm}&scope=${this.yandexApiSettings.scope}${state ? '&state=' + state : ''}`;
+    return `${this.config.rootUrl}authorize?response_type=code&client_id=${this.config.client_id}&redirect_uri=${this.config.redirect_uri}&force_confirm=${this.config.force_confirm}&scope=${this.config.scope}${state ? '&state=' + state : ''}`;
   }
 
-  async updateToken(refreshToken: string): Promise<YandexToken> {
-    const response = await this.request.make(this.yandexApiSettings.rootUrl, {
-      data: {
+  async changeCode(): Promise<object> {
+    const response = await this.request.make(this.config.rootUrl, {
+      query: {
+        grant_type: 'authorization_code',
+        code: YandexAuthHandler.extractCode(),
+        client_id: this.config.client_id,
+        client_secret: this.config.client_secret
+      }
+    });
+    return await response.json();
+  }
+
+  async updateToken(credentials: Credentials): Promise<object> {
+    const response = await this.request.make(this.config.rootUrl, {
+      query: {
         grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-        client_id: this.yandexApiSettings.client_id,
-        client_secret: this.yandexApiSettings.client_secret
+        refresh_token: credentials.refreshToken,
+        client_id: this.config.client_id,
+        client_secret: this.config.client_secret
       },
       method: 'POST'
     });
-    return await response.json() as YandexToken;
+    return await response.json();
   }
-
 }

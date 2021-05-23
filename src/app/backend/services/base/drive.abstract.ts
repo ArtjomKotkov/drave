@@ -1,10 +1,12 @@
 import {AbstractDriveHandler} from '../../handlers/base/drive.handler';
 import {AbstractDrive, AbstractFile} from '../../state/base/model.abstract';
 import {YandexMetaData} from '../../state/yandex/yandex.model';
+import {AbstractAuthService} from './auth.abstract';
 
 export abstract class DriveAbstractService {
 
   abstract handler: AbstractDriveHandler;
+  abstract authService: AbstractAuthService;
 
   abstract updateMetaData(): Promise<void>;
 

@@ -1,47 +1,21 @@
-import {AbstractDrive, AbstractToken, DriveConfig} from '../base';
-import {YandexAuthService} from '../../services/yandex';
+import {AbstractDrive, Credentials, DriveConfig} from '../base';
 import {YandexDriveService} from '../../services/yandex';
 import {YandexConfig} from './config.data';
-import {YandexToken} from './yandex.model';
-import {snakeCaseToCamelCase, structMap} from '../../shared';
 
 
 export class YandexDrive extends AbstractDrive {
 
-  authService = new YandexAuthService();
   driveService = new YandexDriveService(this.callStack);
   config = undefined;
   defaultSettings = YandexConfig;
-
-  private ready = false;
-  private $credentials = this.authService.getCredentials();
 
   constructor() {
     super();
   }
 
-  async init(config: DriveConfig, credentials: AbstractToken): Promise<void> {
-    credentials = structMap(
-      credentials,
-      snakeCaseToCamelCase,
-      true
-    ) as AbstractToken;
-    await super.init(config, credentials);
-    this.$credentials.subscribe(async value => this.rebuild(value));
-  }
-
-  private async rebuild(credentials: YandexToken | undefined): Promise<void> {
-    this.ready = false;
-    if (credentials === undefined) {
-      return;
-    }
-    this.driveService.configure(credentials);
-    await this.driveService.updateMetaData();
-    this.ready = true;
-  }
-
-  isReady(): boolean {
-    return this.ready;
+  async init(config: DriveConfig, credentials?: Credentials): Promise<void> {
+    await super.init(config);
+    await this.driveService.init(credentials);
   }
 
 }

@@ -1,7 +1,7 @@
-import {AbstractToken} from '../base';
+import {Credentials} from '../base';
 import {AbstractDriveMetaData} from '../base/model.abstract';
 
-export interface GoogleToken extends AbstractToken {
+export interface GoogleToken extends Credentials {
 }
 
 export interface GoogleMetaData extends AbstractDriveMetaData {

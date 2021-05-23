@@ -1,23 +1,42 @@
 import {DriveAbstractService} from '../base/drive.abstract';
 import {GoogleConfig} from '../../state/yandex/config.data';
-import {AbstractDrive, GoogleToken} from '../../state';
+import {AbstractDrive, Credentials, GoogleToken} from '../../state';
 import {BehaviorSubject} from 'rxjs';
 import {Stack} from '../../shared';
 import {AbstractFile} from '../../state/base/model.abstract';
 import {GoogleDriveHandler} from '../../handlers/google/drive.handler';
 import {GoogleMetaData} from '../../state/google/google.model';
+import {GoogleAuthService} from './auth.service';
 
 
 export class GoogleDriveService extends DriveAbstractService {
   handler: GoogleDriveHandler = new GoogleDriveHandler();
+  authService = new GoogleAuthService();
+
   private metaData: BehaviorSubject<GoogleMetaData | undefined> = new BehaviorSubject<GoogleMetaData | undefined>(undefined);
+  private $credentials = this.authService.getCredentials();
 
   constructor(private callStack: Stack<string>) {
     super();
   }
 
-  configure(credentials: GoogleToken): void {
+  async init(credentials?: Credentials): Promise<void> {
+    if (credentials) {
+      this.authService.setCredentials(credentials);
+    } else {
+      await this.authService.handleBackRedirect();
+    }
+    this.$credentials.subscribe(async value => this.rebuild(value));
+
+    this.handler.request.registerCallback(401, this.authService.updateToken.bind(this.authService), false);
+  }
+
+  private async rebuild(credentials?: GoogleToken): Promise<void> {
+    if (credentials === undefined) {
+      return;
+    }
     this.handler.configure(credentials);
+    await this.updateMetaData();
   }
 
   getMetaData(): GoogleMetaData | undefined {
@@ -71,7 +90,6 @@ export class GoogleDriveService extends DriveAbstractService {
         file.nested.files = files.map(data => this.googleDataToFile(data) as AbstractFile);
       }
     }
-    console.log(file)
     return file;
   }
 

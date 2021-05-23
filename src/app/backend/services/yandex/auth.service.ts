@@ -1,34 +1,39 @@
 import {AbstractAuthService} from '../base/auth.abstract';
-import {YandexAuthHandler} from '../../handlers';
-import {YandexToken} from '../../state';
+import {Credentials} from '../../state';
 import {BehaviorSubject} from 'rxjs';
 import {snakeCaseToCamelCase, structMap} from '../../shared';
+import {YandexAuthHandler} from '../../handlers';
 
 
 export class YandexAuthService extends AbstractAuthService {
 
-  private authHandler = new YandexAuthHandler();
-  private credentials = new BehaviorSubject<YandexToken | undefined>(undefined);
+  handler = new YandexAuthHandler();
+  private $credentials = new BehaviorSubject<Credentials | undefined>(undefined);
 
   redirectToAuth(state: string): void {
-    window.location.href = this.authHandler.getAuthUrl(state);
+    window.location.href = this.handler.getAuthUrl(state);
   }
 
-  setCredentials(credentials: YandexToken): void {
-    this.credentials.next(credentials);
+  async handleBackRedirect(): Promise<void> {
+    const credentials: Credentials = await this.handler.changeCode() as Credentials;
+    this.$credentials.next(credentials);
   }
 
-  getCredentials(): BehaviorSubject<YandexToken | undefined> {
-    return this.credentials;
+  setCredentials(credentials: Credentials): void {
+    this.$credentials.next(credentials);
   }
 
-  async updateToken(): Promise<YandexToken | undefined> {
-    const refreshToken = this.credentials.getValue()?.refreshToken;
-    if (!refreshToken) {
-      return ;
+  getCredentials(): BehaviorSubject<Credentials | undefined> {
+    return this.$credentials;
+  }
+
+  async updateToken(): Promise<Credentials | void> {
+    const credentials = this.$credentials.getValue();
+    if (!credentials) {
+      return;
     }
     return structMap(
-      await this.authHandler.updateToken(refreshToken) as YandexToken,
+      await this.handler.updateToken(credentials) as Credentials,
       snakeCaseToCamelCase,
       true
     );

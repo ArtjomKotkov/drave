@@ -1,19 +1,1 @@
 <router-outlet></router-outlet>
-
-<div *ngFor="let item of drivesMap | keyValue" style="margin: 20px 10px">
-    <div>{{item.key | titlecase}}</div>
-    <div>
-      <div *ngFor="let drive of item.value">
-        <span>{{drive.configuration.name}}</span>
-        <br>
-        <input #path type="text">
-        <button (click)="load(drive, path.value)">LOAD</button>
-        <br>
-        <button (click)="load(drive)">LOAD ROOT</button>
-        <br>
-        <button (click)="delete(drive)">DELETE</button>
-        <br>
-      </div>
-    </div>
-
-</div>

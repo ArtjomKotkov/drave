@@ -35,7 +35,7 @@ export class DriveConnectorComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    this.sampleDrive?.authService.redirectToAuth(this.getRedirectState());
+    this.sampleDrive?.driveService.authService.redirectToAuth(this.getRedirectState());
   }
 
   setDefaultFormValue(): void {

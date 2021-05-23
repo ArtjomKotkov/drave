@@ -1,15 +1,15 @@
 import {AbstractDriveHandler} from '../base/drive.handler';
-import {YandexToken} from '../../state';
 import {Request} from '../shared/request';
+import {Credentials} from '../../state';
 
 
 export class YandexDriveHandler extends AbstractDriveHandler {
 
-  credentials: YandexToken | undefined;
+  credentials: Credentials | undefined;
   apiUrl = 'https://cloud-api.yandex.net/v1/disk/';
   request = new Request();
 
-  configure(credentials: YandexToken): void {
+  configure(credentials: Credentials): void {
     this.request.configure({
       headers: {
         Authorization: `OAuth ${credentials.accessToken}`

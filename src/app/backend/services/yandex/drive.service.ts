@@ -1,22 +1,45 @@
 import {YandexDriveHandler} from '../../handlers';
 import {DriveAbstractService} from '../base/drive.abstract';
 import {YandexConfig} from '../../state/yandex/config.data';
-import {AbstractDrive, YandexToken} from '../../state';
+import {AbstractDrive, Credentials, GoogleToken} from '../../state';
 import {YandexMetaData} from '../../state/yandex/yandex.model';
 import {BehaviorSubject} from 'rxjs';
 import {Stack} from '../../shared';
 import {AbstractFile} from '../../state/base/model.abstract';
+import {YandexAuthService} from './auth.service';
 
 
 export class YandexDriveService extends DriveAbstractService {
   handler: YandexDriveHandler = new YandexDriveHandler();
+  authService: YandexAuthService = new YandexAuthService();
+
   private metaData: BehaviorSubject<YandexMetaData | undefined> = new BehaviorSubject<YandexMetaData | undefined>(undefined);
+  private $credentials = this.authService.getCredentials();
 
   constructor(private callStack: Stack<string>) {
     super();
   }
 
-  configure(credentials: YandexToken): void {
+  async init(credentials?: Credentials): Promise<void> {
+    if (credentials) {
+      this.authService.setCredentials(credentials);
+    } else {
+      await this.authService.handleBackRedirect();
+    }
+    this.$credentials.subscribe(async value => this.rebuild(value));
+
+    this.handler.request.registerCallback(401, this.authService.updateToken.bind(this.authService), true);
+  }
+
+  private async rebuild(credentials?: GoogleToken): Promise<void> {
+    if (credentials === undefined) {
+      return;
+    }
+    this.configure(credentials);
+    await this.updateMetaData();
+  }
+
+  configure(credentials: Credentials): void {
     this.handler.configure(credentials);
   }
 

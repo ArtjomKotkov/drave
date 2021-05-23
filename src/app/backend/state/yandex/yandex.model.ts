@@ -1,7 +1,5 @@
-import {AbstractDriveMetaData, AbstractFile, AbstractResponse, AbstractToken} from '../base/model.abstract';
+import {AbstractDriveMetaData, AbstractResponse} from '../base/model.abstract';
 
-export interface YandexToken extends AbstractToken {
-}
 
 export interface YandexMetaData extends AbstractDriveMetaData {
   unlimitedAutouploadEnabled?: boolean;
