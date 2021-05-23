@@ -5,7 +5,7 @@ import {GoogleDriveService} from '../../services/google/drive.service';
 
 export class GoogleDrive extends AbstractDrive {
 
-  driveService = new GoogleDriveService(this.callStack);
+  driveService = new GoogleDriveService(this.callStack, this.$changed);
   config = undefined;
   defaultSettings = GoogleConfig;
 

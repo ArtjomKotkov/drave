@@ -1,5 +1,5 @@
 import {AbstractAuthService} from '../base/auth.abstract';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {snakeCaseToCamelCase, structMap} from '../../shared';
 import {GoogleAuthHandler} from '../../handlers/google';
 import {Credentials} from '../../state';
@@ -9,6 +9,10 @@ export class GoogleAuthService extends AbstractAuthService {
 
   handler = new GoogleAuthHandler();
   private $credentials = new BehaviorSubject<Credentials | undefined>(undefined);
+
+  constructor(private $changed: Subject<any>) {
+    super();
+  }
 
   redirectToAuth(state: string): void {
     window.location.href = this.handler.getAuthUrl(state);
@@ -27,6 +31,7 @@ export class GoogleAuthService extends AbstractAuthService {
 
   setCredentials(credentials: Credentials): void {
     this.$credentials.next(credentials);
+    this.$changed.next(true);
   }
 
   getCredentials(): BehaviorSubject<Credentials | undefined> {
@@ -43,11 +48,11 @@ export class GoogleAuthService extends AbstractAuthService {
         ...this.$credentials.getValue(),
         ...structMap(
           await this.handler.updateToken(credentials) as Credentials,
-        snakeCaseToCamelCase,
-        true
+          snakeCaseToCamelCase,
+          true
         )
       }
     );
-
+    this.$changed.next(true);
   }
 }

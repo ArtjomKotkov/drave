@@ -3,7 +3,7 @@ import {DriveAbstractService} from '../base/drive.abstract';
 import {YandexConfig} from '../../state/yandex/config.data';
 import {AbstractDrive, Credentials, GoogleToken} from '../../state';
 import {YandexMetaData} from '../../state/yandex/yandex.model';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {Stack} from '../../shared';
 import {AbstractFile} from '../../state/base/model.abstract';
 import {YandexAuthService} from './auth.service';
@@ -11,12 +11,15 @@ import {YandexAuthService} from './auth.service';
 
 export class YandexDriveService extends DriveAbstractService {
   handler: YandexDriveHandler = new YandexDriveHandler();
-  authService: YandexAuthService = new YandexAuthService();
+  authService: YandexAuthService = new YandexAuthService(this.$changed);
 
   private metaData: BehaviorSubject<YandexMetaData | undefined> = new BehaviorSubject<YandexMetaData | undefined>(undefined);
   private $credentials = this.authService.getCredentials();
 
-  constructor(private callStack: Stack<string>) {
+  constructor(
+    private callStack: Stack<string>,
+    private $changed: Subject<any>
+  ) {
     super();
   }
 
