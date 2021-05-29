@@ -1,0 +1,13 @@
+.side-bar {
+  display: flex;
+  background-color: var(--color-brown);
+  min-height: 100%;
+  overflow: auto;
+
+  & .drive-block {
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+  }
+
+}

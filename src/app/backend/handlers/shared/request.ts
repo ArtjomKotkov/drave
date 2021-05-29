@@ -1,3 +1,5 @@
+import {from} from 'rxjs';
+
 type QueryType = { [key: string]: string | number | boolean | undefined };
 
 export interface RequestParams {
@@ -5,7 +7,7 @@ export interface RequestParams {
   data?: any;
   headers?: { [key: string]: string };
   query?: QueryType;
-  formData?: FormData;
+  formData?: { [key: string]: string };
 }
 
 export interface Callback {
@@ -56,7 +58,7 @@ export class Request {
       {
         method: params?.method ? params?.method : 'GET',
         headers: {...params?.headers, ...this.coreHeaders},
-        body: params?.formData ? params?.formData : JSON.stringify(params?.data)
+        body: params?.formData ? this.prepareFormData(params?.formData) : JSON.stringify(params?.data)
       }
     );
   }
@@ -71,6 +73,14 @@ export class Request {
       });
     }
     return newUrl.toString();
+  }
+
+  private prepareFormData(data: object): FormData {
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(data)) {
+      formData.append(key, value);
+    }
+    return formData;
   }
 
 }

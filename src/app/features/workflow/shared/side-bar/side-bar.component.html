@@ -1,0 +1,22 @@
+<dr-scroll-area>
+  <div class="side-bar">
+    <dr-vertical-menu [selectedDrive]="$selectedDrive"></dr-vertical-menu>
+
+    <div [ngStyle]="{'flex-direction': direction}">
+      <ng-container *ngFor="let drives of drives | async | keyValue">
+        <ng-container *ngFor="let drive of drives.value">
+          <div class="drive-block" (click)="selectDrive(drive)" [ngStyle]="{'background-color': '#'+drive.config.color}" >
+            {{drive.config.name}}
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <div class="drive-block">
+        <img src="/assets/icons/plus.svg">
+      </div>
+      <div class="drive-block">
+        <img src="/assets/icons/menu.svg">
+      </div>
+    </div>
+  </div>
+</dr-scroll-area>

@@ -13,13 +13,14 @@ export class YandexAuthHandler extends AuthHandler{
   }
 
   async changeCode(): Promise<object> {
-    const response = await this.request.make(this.config.rootUrl, {
-      query: {
+    const response = await this.request.make(this.config.exchange_code_uri, {
+      formData: {
         grant_type: 'authorization_code',
         code: YandexAuthHandler.extractCode(),
         client_id: this.config.client_id,
         client_secret: this.config.client_secret
-      }
+      },
+      method: 'POST'
     });
     return await response.json();
   }

@@ -8,6 +8,8 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {FactoryResolver} from './backend/factories';
 import {DrivesStoreService} from './backend/services/shared/store.service';
 import {LocalStorageService} from './core_services/storage/local.storage';
+import {PipesModule} from './features/pipes/pipes.module';
+import {KeyValue} from './utils';
 
 
 @NgModule({
@@ -17,12 +19,14 @@ import {LocalStorageService} from './core_services/storage/local.storage';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PipesModule
   ],
   providers: [
     FactoryResolver,
     DrivesStoreService,
-    LocalStorageService
+    LocalStorageService,
+    KeyValue
   ],
   exports: [
   ],

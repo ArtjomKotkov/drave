@@ -7,7 +7,7 @@ import {BehaviorSubject} from 'rxjs';
 import {FactoryResolver} from '../../factories';
 
 
-type CachedDrives = { [key: string]: AbstractDrive[] };
+export type CachedDrives = { [key: string]: AbstractDrive[] };
 
 
 @Injectable({
@@ -24,7 +24,7 @@ export class DrivesStoreService {
   ) {
   }
 
-  get value(): BehaviorSubject<CachedDrives> {
+  get drives(): BehaviorSubject<CachedDrives> {
     return this.cachedValue;
   }
 
@@ -53,6 +53,7 @@ export class DrivesStoreService {
 
   add(drive: AbstractDrive): boolean {
     const currentValue = this.cachedValue.getValue();
+    console.log(currentValue)
     if (this.checkClone(drive, currentValue)) {
       return false;
     }

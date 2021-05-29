@@ -20,7 +20,13 @@ export class YandexAuthService extends AbstractAuthService {
 
   async handleBackRedirect(): Promise<void> {
     const credentials: Credentials = await this.handler.changeCode() as Credentials;
-    this.$credentials.next(credentials);
+    this.$credentials.next(
+      structMap(
+        credentials,
+        snakeCaseToCamelCase,
+        true
+      )
+    );
   }
 
   setCredentials(credentials: Credentials): void {
