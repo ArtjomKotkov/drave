@@ -1,15 +1,15 @@
 import {AbstractDriveHandler} from '../base/drive.handler';
-import {GoogleToken} from '../../state';
+import {Credentials} from '../../state';
 import {Request} from '../shared/request';
 
 
 export class GoogleDriveHandler extends AbstractDriveHandler {
 
-  credentials: GoogleToken | undefined;
+  credentials: Credentials | undefined;
   apiUrl = 'https://www.googleapis.com/drive/v3/';
   request = new Request();
 
-  configure(credentials: GoogleToken): void {
+  configure(credentials: Credentials): void {
     this.request.configure({
       headers: {
         Authorization: `Bearer ${credentials.accessToken}`

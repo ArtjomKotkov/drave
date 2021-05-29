@@ -1,0 +1,12 @@
+.scroll-area {
+  height: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  background-color: var(--color-brown);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-dynamic);
+}

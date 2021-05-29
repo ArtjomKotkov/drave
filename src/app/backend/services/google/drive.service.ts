@@ -1,6 +1,6 @@
 import {DriveAbstractService} from '../base/drive.abstract';
 import {GoogleConfig} from '../../state/yandex/config.data';
-import {AbstractDrive, Credentials, GoogleToken} from '../../state';
+import {AbstractDrive, Credentials} from '../../state';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {Stack} from '../../shared';
 import {AbstractFile} from '../../state/base/model.abstract';
@@ -29,17 +29,21 @@ export class GoogleDriveService extends DriveAbstractService {
     } else {
       await this.authService.handleBackRedirect();
     }
-    this.$credentials.subscribe(async value => this.rebuild(value));
+    this.$credentials.subscribe(value => this.rebuild(value));
 
     this.handler.request.registerCallback(401, this.authService.updateToken.bind(this.authService), true);
   }
 
-  private async rebuild(credentials?: GoogleToken): Promise<void> {
+  private async rebuild(credentials?: Credentials): Promise<void> {
     if (credentials === undefined) {
       return;
     }
-    this.handler.configure(credentials);
+    this.configure(credentials);
     await this.updateMetaData();
+  }
+
+  configure(credentials: Credentials): void {
+    this.handler.configure(credentials);
   }
 
   getMetaData(): GoogleMetaData | undefined {

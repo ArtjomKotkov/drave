@@ -1,1 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-common-background: #E4E0DD;
+  --color-brown: #40333C;
+  --color-common: #F2EEEC;
+  --color-base-blue: #7BC8DC;
+  --color-dynamic: var(--color-base-blue);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-common-background);
+  max-height: 100vh;
+}

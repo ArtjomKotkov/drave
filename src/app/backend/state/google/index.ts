@@ -1,1 +1,1 @@
-export {GoogleToken} from './google.model';
+export {GoogleMetaData} from './google.model';

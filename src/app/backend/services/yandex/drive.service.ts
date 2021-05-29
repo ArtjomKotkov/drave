@@ -1,7 +1,7 @@
 import {YandexDriveHandler} from '../../handlers';
 import {DriveAbstractService} from '../base/drive.abstract';
 import {YandexConfig} from '../../state/yandex/config.data';
-import {AbstractDrive, Credentials, GoogleToken} from '../../state';
+import {AbstractDrive, Credentials} from '../../state';
 import {YandexMetaData} from '../../state/yandex/yandex.model';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {Stack} from '../../shared';
@@ -29,12 +29,12 @@ export class YandexDriveService extends DriveAbstractService {
     } else {
       await this.authService.handleBackRedirect();
     }
-    this.$credentials.subscribe(async value => this.rebuild(value));
+    this.$credentials.subscribe(value => this.rebuild(value));
 
     this.handler.request.registerCallback(401, this.authService.updateToken.bind(this.authService), true);
   }
 
-  private async rebuild(credentials?: GoogleToken): Promise<void> {
+  private async rebuild(credentials?: Credentials): Promise<void> {
     if (credentials === undefined) {
       return;
     }
