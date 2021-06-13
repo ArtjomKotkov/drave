@@ -53,14 +53,13 @@ export class DrivesStoreService {
 
   add(drive: AbstractDrive): boolean {
     const currentValue = this.cachedValue.getValue();
-    console.log(currentValue)
-    if (this.checkClone(drive, currentValue)) {
+    if (this.checkClone(drive, currentValue) || !drive.type) {
       return false;
     }
-    if (!(drive.configuration.type in currentValue)) {
-      currentValue[drive.configuration.type] = [];
+    if (!(drive.type in currentValue)) {
+      currentValue[drive.type] = [];
     }
-    currentValue[drive.configuration.type].push(drive);
+    currentValue[drive.type].push(drive);
     this.cachedValue.next(currentValue);
     this.save();
     return true;
@@ -68,13 +67,13 @@ export class DrivesStoreService {
 
   delete(drive: AbstractDrive): void {
     const currentValue = this.cachedValue.getValue();
-    if (!currentValue) {
+    if (!currentValue || !drive.type) {
       return;
     }
-    const index = currentValue[drive.configuration.type].indexOf(drive);
-    currentValue[drive.configuration.type].splice(index, 1);
-    if (currentValue[drive.configuration.type].length === 0) {
-      delete currentValue[drive.configuration.type];
+    const index = currentValue[drive.type].indexOf(drive);
+    currentValue[drive.type].splice(index, 1);
+    if (currentValue[drive.type].length === 0) {
+      delete currentValue[drive.type];
     }
     this.cachedValue.next(currentValue);
     this.save();
@@ -82,20 +81,20 @@ export class DrivesStoreService {
 
   update(drive: AbstractDrive): void {
     const currentValue = this.cachedValue.getValue();
-    if (!currentValue) {
+    if (!currentValue || !drive.type) {
       return;
     }
-    const index = currentValue[drive.configuration.type].indexOf(drive);
-    currentValue[drive.configuration.type][index] = drive;
+    const index = currentValue[drive.type].indexOf(drive);
+    currentValue[drive.type][index] = drive;
     this.cachedValue.next(currentValue);
     this.save();
   }
 
   private checkClone(drive: AbstractDrive, data: CachedDrives): boolean {
-    if (!(drive.configuration.type in data)) {
+    if (!drive.type || !(drive.type in data)) {
       return false;
     }
-    return !!data[drive.configuration.type].find(
+    return !!data[drive.type].find(
       driveStored => driveStored.driveService.getMetaData()?.owner.id === drive.driveService.getMetaData()?.owner.id
     );
   }

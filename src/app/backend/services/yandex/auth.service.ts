@@ -1,5 +1,5 @@
 import {AbstractAuthService} from '../base/auth.abstract';
-import {Credentials} from '../../state';
+import {Credentials, StorableData} from '../../state';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {snakeCaseToCamelCase, structMap} from '../../shared';
 import {YandexAuthHandler} from '../../handlers';
@@ -12,6 +12,14 @@ export class YandexAuthService extends AbstractAuthService {
 
   constructor(private $changed: Subject<any>) {
     super();
+  }
+
+  async configure(data: StorableData): Promise<void> {
+    if (data.credentials) {
+      this.setCredentials(data.credentials);
+    } else {
+      await this.handleBackRedirect();
+    }
   }
 
   redirectToAuth(state: string): void {

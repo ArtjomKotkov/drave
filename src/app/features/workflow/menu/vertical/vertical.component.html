@@ -2,27 +2,28 @@
   class="menu"
   [ngClass]="{'open': !!(selectedDrive | async)}"
   [ngStyle]="{
-    'background-color': '#'+(selectedDrive| async)?.config?.color,
-    'color': getContrastColor_('#'+(selectedDrive| async)?.config?.color)
+    'background-color': '#'+(selectedDrive| async)?.color
   }">
       <div *ngIf="($driveMetaData | async) as metadata">
-        <div class="base-titled-input">
-          <span>Диск активен</span>
-          <input type="checkbox" checked>
-        </div>
-        <div>
-          <span>{{metadata.owner.displayName}}</span>
-        </div>
-        <div class="base-titled-input">
-          <button>Отключить диск</button>
-        </div>
-        <div>
-          <span>Занятое место на диске:</span>
-          <progress [max]='metadata.totalSpace' [value]='metadata.filledSpace '></progress>
-        </div>
-        <div class="base-titled-input">
-          <span>Скрыть файлы диска</span>
-          <input type="checkbox">
-        </div>
+        <form [formGroup]="form">
+          <div class="base-titled-input">
+            <span>Диск активен</span>
+            <input type="checkbox" checked formControlName="active" (change)="saveConfig()">
+          </div>
+          <div>
+            <span>{{metadata.owner.displayName}}</span>
+          </div>
+          <div class="base-titled-input">
+            <button (click)="deleteDrive()">Отключить диск</button>
+          </div>
+          <div *ngIf="form.value.active">
+            <span>Занятое место на диске:</span>
+            <progress [max]='metadata.totalSpace' [value]='metadata.filledSpace '></progress>
+          </div>
+          <div class="base-titled-input">
+            <span>Скрыть файлы диска</span>
+            <input type="checkbox" formControlName="hidden" (change)="saveConfig()">
+          </div>
+        </form>
       </div>
 </div>

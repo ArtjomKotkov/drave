@@ -1,4 +1,4 @@
-import {AbstractDrive, DriveConfig, StorableData} from '../../state';
+import {AbstractDrive, StorableData} from '../../state';
 
 
 export abstract class AbstractDriveFactory {
@@ -8,11 +8,6 @@ export abstract class AbstractDriveFactory {
   abstract sampleDrive: AbstractDrive;
 
   abstract make(): AbstractDrive;
-
-  configure(model: AbstractDrive, config: DriveConfig): AbstractDrive {
-    model.configuration = config;
-    return model;
-  }
 
   abstract makeFromStorableData(data: StorableData): Promise<AbstractDrive>;
 }

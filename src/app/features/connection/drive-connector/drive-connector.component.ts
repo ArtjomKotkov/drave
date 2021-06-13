@@ -22,10 +22,12 @@ export class DriveConnectorComponent implements OnInit {
     color: new FormControl(''),
   });
 
-  constructor(private driveFactoryResolver: FactoryResolver) {
+  constructor(
+    private driveFactoryResolver: FactoryResolver
+  ) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.factory = this.driveFactoryResolver.getFactory(this.factoryName ? this.factoryName : '');
     this.sampleDrive = this.factory?.sampleDrive;
     this.setDefaultFormValue();
@@ -35,11 +37,11 @@ export class DriveConnectorComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    this.sampleDrive?.driveService.authService.redirectToAuth(this.getRedirectState());
+    this.sampleDrive?.authService.redirectToAuth(this.getRedirectState());
   }
 
   setDefaultFormValue(): void {
-    this.form.controls.color.setValue(this.sampleDrive?.settings.baseColor);
+    this.form.controls.color.setValue(this.sampleDrive?.config?.base?.baseColor);
   }
 
   getRedirectState(): string {
