@@ -7,7 +7,6 @@ import {AbstractAuthService} from './auth.abstract';
 export abstract class DriveAbstractService {
 
   abstract handler: AbstractDriveHandler;
-  abstract authService: AbstractAuthService;
 
   abstract updateMetaData(): Promise<void>;
 

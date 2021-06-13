@@ -1,49 +1,34 @@
 import {DriveAbstractService} from '../base/drive.abstract';
 import {GoogleConfig} from '../../state/yandex/config.data';
 import {AbstractDrive, Credentials} from '../../state';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {Stack} from '../../shared';
 import {AbstractFile} from '../../state/base/model.abstract';
 import {GoogleDriveHandler} from '../../handlers/google/drive.handler';
-import {GoogleMetaData} from '../../state/google/google.model';
-import {GoogleAuthService} from './auth.service';
+import {GoogleMetaData} from '../../state';
 
 
 export class GoogleDriveService extends DriveAbstractService {
   handler: GoogleDriveHandler = new GoogleDriveHandler();
-  authService = new GoogleAuthService(this.$changed);
 
   private metaData: BehaviorSubject<GoogleMetaData | undefined> = new BehaviorSubject<GoogleMetaData | undefined>(undefined);
-  private $credentials = this.authService.getCredentials();
 
   constructor(
     private callStack: Stack<string>,
-    private $changed: Subject<any>
   ) {
     super();
   }
 
-  async init(credentials?: Credentials): Promise<void> {
-    if (credentials) {
-      this.authService.setCredentials(credentials);
-    } else {
-      await this.authService.handleBackRedirect();
-    }
-    this.$credentials.subscribe(value => this.rebuild(value));
-
-    this.handler.request.registerCallback(401, this.authService.updateToken.bind(this.authService), true);
+  async registerCallback(code: number, function_: CallableFunction): Promise<void> {
+    this.handler.request.registerCallback(code, function_, true);
   }
 
-  private async rebuild(credentials?: Credentials): Promise<void> {
+  async rebuild(credentials?: Credentials): Promise<void> {
     if (credentials === undefined) {
       return;
     }
-    this.configure(credentials);
-    await this.updateMetaData();
-  }
-
-  configure(credentials: Credentials): void {
     this.handler.configure(credentials);
+    await this.updateMetaData();
   }
 
   getMetaData(): GoogleMetaData | undefined {

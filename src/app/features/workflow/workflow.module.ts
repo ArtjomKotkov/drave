@@ -9,6 +9,7 @@ import {SideBarComponent} from './shared/side-bar/side-bar.component';
 import {ScrollAreaComponent} from './shared/scroll-area/scroll-area.component';
 import {DirectivesModule} from '../dirrectives/directives.module';
 import { VerticalComponent } from './menu/vertical/vertical.component';
+import {ReactiveFormsModule} from '@angular/forms';
 
 
 @NgModule({
@@ -22,12 +23,13 @@ import { VerticalComponent } from './menu/vertical/vertical.component';
     KeyValue,
     VerticalComponent,
   ],
-  imports: [
-    CommonModule,
-    WorkflowRoutingModule,
-    PipesModule,
-    DirectivesModule
-  ]
+    imports: [
+        CommonModule,
+        WorkflowRoutingModule,
+        PipesModule,
+        DirectivesModule,
+        ReactiveFormsModule
+    ]
 })
 export class WorkflowModule {
 }

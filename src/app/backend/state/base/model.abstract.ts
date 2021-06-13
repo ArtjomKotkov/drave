@@ -1,7 +1,10 @@
-import {AbstractConfig} from './config.abstract';
+import {DriveConfig} from './config.abstract';
 import {DriveAbstractService} from '../../services/base/drive.abstract';
 import {Stack} from '../../shared';
 import {Subject} from 'rxjs';
+import {AbstractAuthService} from '../../services/base/auth.abstract';
+import {ConfigService} from '../../services/base/config.service';
+
 
 export interface AbstractDriveMetaData {
   totalSpace: number;
@@ -16,8 +19,8 @@ export interface AbstractDriveMetaData {
 }
 
 export interface StorableData {
-  credentials: Credentials;
-  config: DriveConfig;
+  credentials?: Credentials;
+  config?: DriveConfig;
 }
 
 export interface Credentials {
@@ -49,46 +52,50 @@ export interface AbstractFile {
 export interface AbstractResponse {
 }
 
-export interface DriveConfig {
-  color: string;
-  name: string;
-  type: string;
+export interface AbstractConfigUpdateModel  {
+  workflow?: {
+    default?: {
+      isEnabled?: boolean;
+      isHidden?: boolean;
+    }
+  };
 }
 
 export abstract class AbstractDrive {
+  abstract authService: AbstractAuthService;
   abstract driveService: DriveAbstractService;
-  abstract config: DriveConfig | undefined;
-  abstract defaultSettings: AbstractConfig;
+  abstract configService: ConfigService;
 
   callStack: Stack<string> = new Stack<string>();
-
   $changed = new Subject();
 
   get action(): DriveAbstractService {
     return this.driveService;
   }
 
-  async init(config: DriveConfig, credentials?: Credentials): Promise<void> {
-    this.configuration = config;
-  }
+  abstract configure(data: StorableData): Promise<void>;
 
-  get configuration(): DriveConfig {
-    return this.config as DriveConfig;
-  }
-
-  set configuration(value: DriveConfig) {
-    this.config = value;
-  }
-
-  get settings(): AbstractConfig {
-    return this.defaultSettings;
+  get config(): DriveConfig | undefined {
+    return this.configService.config.getValue();
   }
 
   get storableData(): StorableData {
     return {
-      credentials: this.driveService.authService.getCredentials().getValue(),
-      config: this.configuration
+      credentials: this.authService.getCredentials().getValue(),
+      config: this.configService.config.getValue(),
     } as StorableData;
+  }
+
+  get color(): string | undefined {
+    return this.configService.configValue.common?.color;
+  }
+
+  get name(): string | undefined {
+    return this.configService.configValue.common?.name;
+  }
+
+  get type(): string | undefined {
+    return this.configService.configValue.common?.type;
   }
 
 }

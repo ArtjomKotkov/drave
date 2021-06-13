@@ -31,12 +31,15 @@ class YandexDriveFactory extends AbstractDriveFactory {
   sampleDrive: YandexDrive = new YandexDrive();
 
   make(): AbstractDrive {
-    return new this.driveClass();
+    const drive = new this.driveClass();
+    drive.init();
+    return drive;
   }
 
   async makeFromStorableData(data: StorableData): Promise<AbstractDrive> {
     const drive = new this.driveClass();
-    await drive.init(data.config, data.credentials);
+    await drive.init();
+    await drive.configure(data);
     return drive;
   }
 }
@@ -48,12 +51,15 @@ class GoogleDriveFactory extends AbstractDriveFactory {
   sampleDrive: GoogleDrive = new GoogleDrive();
 
   make(): AbstractDrive {
-    return new this.driveClass();
+    const drive = new this.driveClass();
+    drive.init();
+    return drive;
   }
 
   async makeFromStorableData(data: StorableData): Promise<AbstractDrive> {
     const drive = new this.driveClass();
-    await drive.init(data.config, data.credentials);
+    await drive.init();
+    await drive.configure(data);
     return drive;
   }
 }

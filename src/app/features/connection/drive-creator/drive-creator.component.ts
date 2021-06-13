@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FactoryResolver} from '../../../backend/factories';
-import {AbstractDrive, DriveConfig} from '../../../backend/state';
+import {AbstractDrive} from '../../../backend/state';
 import {DrivesStoreService} from '../../../backend/services/shared/store.service';
 import {DriveFactories} from '../../../backend/factories/drive.factory';
+import {CommonConfig} from '../../../backend/state/base/config.abstract';
 
 
 @Component({
@@ -26,23 +27,27 @@ export class DriveCreatorComponent implements OnInit {
   }
 
   async createDrive(): Promise<void> {
-    const driveData = this.extractState();
-    if (!driveData) {
+    const commonConfig = this.extractState();
+    if (!commonConfig || !commonConfig.type) {
       return;
     }
-    this.factory = this.driveFactoryResolver.getFactory(driveData.type);
+    this.factory = this.driveFactoryResolver.getFactory(commonConfig.type);
     if (!this.factory) {
       return;
     }
     this.drive = this.factory.make();
-    await this.drive.init(driveData);
+    await this.drive.configure({
+      config: {
+        common: commonConfig
+      }
+    });
   }
 
-  extractState(): DriveConfig | undefined {
+  extractState(): CommonConfig | undefined {
     const queryString = window.location.search;
     const params = new URLSearchParams(queryString);
     const state = params.get('state');
-    return state ? JSON.parse(state) as DriveConfig : undefined;
+    return state ? JSON.parse(state) as CommonConfig : undefined;
   }
 
   save(): void {

@@ -1,21 +1,30 @@
-import {AbstractDrive, Credentials, DriveConfig} from '../base';
-import {YandexDriveService} from '../../services/yandex';
-import {YandexConfig} from './config.data';
+import {AbstractDrive, Credentials, StorableData} from '../base';
+import {YandexAuthService, YandexDriveService} from '../../services/yandex';
+import {YandexDriveConfig} from './config.data';
+import {BehaviorSubject} from 'rxjs';
+import {ConfigService} from '../../services/base/config.service';
 
 
 export class YandexDrive extends AbstractDrive {
 
-  driveService = new YandexDriveService(this.callStack, this.$changed);
-  config = undefined;
-  defaultSettings = YandexConfig;
+  driveService: YandexDriveService = new YandexDriveService(this.callStack);
+  authService: YandexAuthService = new YandexAuthService(this.$changed);
+  configService: ConfigService = new ConfigService(YandexDriveConfig);
 
-  constructor() {
-    super();
+  private $credentials!: BehaviorSubject<Credentials | undefined>;
+
+  async init(): Promise<void> {
+    this.$credentials = this.authService.getCredentials();
+
+    this.$credentials.subscribe(credentials => this.driveService.rebuild(credentials));
+    await this.driveService.registerCallback(401, this.authService.updateToken.bind(this.authService));
   }
 
-  async init(config: DriveConfig, credentials?: Credentials): Promise<void> {
-    await super.init(config);
-    await this.driveService.init(credentials);
+  async configure(data: StorableData): Promise<void> {
+    if (data.config) {
+      this.configService.set(data.config);
+    }
+    await this.authService.configure(data);
   }
 
 }

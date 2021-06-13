@@ -5,14 +5,16 @@
     <div [ngStyle]="{'flex-direction': direction}">
       <ng-container *ngFor="let drives of drives | async | keyValue">
         <ng-container *ngFor="let drive of drives.value">
-          <div class="drive-block" (click)="selectDrive(drive)" [ngStyle]="{'background-color': '#'+drive.config.color}" >
-            {{drive.config.name}}
+          <div class="drive-block" (click)="selectDrive(drive)" [ngStyle]="{'background-color': '#'+drive.color}" >
+            {{drive.name}}
           </div>
         </ng-container>
       </ng-container>
 
       <div class="drive-block">
-        <img src="/assets/icons/plus.svg">
+        <a href="#" routerLink="/connections">
+          <img src="/assets/icons/plus.svg">
+        </a>
       </div>
       <div class="drive-block">
         <img src="/assets/icons/menu.svg">

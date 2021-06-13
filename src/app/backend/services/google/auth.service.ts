@@ -2,7 +2,7 @@ import {AbstractAuthService} from '../base/auth.abstract';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {snakeCaseToCamelCase, structMap} from '../../shared';
 import {GoogleAuthHandler} from '../../handlers/google';
-import {Credentials} from '../../state';
+import {Credentials, StorableData} from '../../state';
 
 
 export class GoogleAuthService extends AbstractAuthService {
@@ -12,6 +12,14 @@ export class GoogleAuthService extends AbstractAuthService {
 
   constructor(private $changed: Subject<any>) {
     super();
+  }
+
+  async configure(data: StorableData): Promise<void> {
+    if (data.credentials) {
+      this.setCredentials(data.credentials);
+    } else {
+      await this.handleBackRedirect();
+    }
   }
 
   redirectToAuth(state: string): void {
@@ -39,6 +47,7 @@ export class GoogleAuthService extends AbstractAuthService {
   }
 
   async updateToken(): Promise<void> {
+    console.log('update???')
     const credentials = this.$credentials.getValue();
     if (!credentials) {
       return;
