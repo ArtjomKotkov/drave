@@ -1,6 +1,6 @@
 <dr-scroll-area>
   <div class="side-bar">
-    <dr-vertical-menu [selectedDrive]="$selectedDrive"></dr-vertical-menu>
+    <dr-vertical-menu [selectedDrive]="$selectedDrive" [opened]="this.menuOpened" [mode]="menuMode"></dr-vertical-menu>
 
     <div [ngStyle]="{'flex-direction': direction}">
       <ng-container *ngFor="let drives of drives | async | keyValue">
@@ -16,7 +16,7 @@
           <img src="/assets/icons/plus.svg">
         </a>
       </div>
-      <div class="drive-block">
+      <div class="drive-block" (click)="switchCommonMenu()">
         <img src="/assets/icons/menu.svg">
       </div>
     </div>

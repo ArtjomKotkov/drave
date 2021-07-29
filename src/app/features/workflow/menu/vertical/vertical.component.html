@@ -1,29 +1,49 @@
 <div
   class="menu"
-  [ngClass]="{'open': !!(selectedDrive | async)}"
+  [ngClass]="{'open': opened}"
   [ngStyle]="{
-    'background-color': '#'+(selectedDrive| async)?.color
+    'background-color': '#'+(selectedDrive | async)?.color
   }">
+  <div class="inner-wrapper">
+    <ng-container *ngIf="mode === 'drive'; else commonMenu">
+      <span class="settings-header">Настройки удаленного диска</span>
       <div *ngIf="($driveMetaData | async) as metadata">
-        <form [formGroup]="form">
+        <form [formGroup]="formDrive">
           <div class="base-titled-input">
             <span>Диск активен</span>
-            <input type="checkbox" checked formControlName="active" (change)="saveConfig()">
+            <mat-slide-toggle formControlName="active"></mat-slide-toggle>
           </div>
-          <div>
+          <div class="owner-name-block">
             <span>{{metadata.owner.displayName}}</span>
           </div>
-          <div class="base-titled-input">
-            <button (click)="deleteDrive()">Отключить диск</button>
+          <div class="base-titled-input delete-drive-input">
+            <button class="delete-drive-button" (click)="deleteDrive()">Отключить диск</button>
           </div>
-          <div *ngIf="form.value.active">
-            <span>Занятое место на диске:</span>
-            <progress [max]='metadata.totalSpace' [value]='metadata.filledSpace '></progress>
-          </div>
-          <div class="base-titled-input">
-            <span>Скрыть файлы диска</span>
-            <input type="checkbox" formControlName="hidden" (change)="saveConfig()">
-          </div>
+          <ng-container *ngIf="formDrive.value.active">
+            <div class="titled-input">
+              <span>Занятое место на диске [{{metadata.filledSpace}}/{{metadata.totalSpace}}]</span>
+              <mat-progress-bar mode="determinate" [value]="metadata.filledSpace/metadata.totalSpace*100"></mat-progress-bar>
+            </div>
+            <div class="base-titled-input">
+              <span>Скрыть файлы диска</span>
+              <mat-slide-toggle formControlName="hidden"></mat-slide-toggle>
+            </div>
+          </ng-container>
         </form>
       </div>
+    </ng-container>
+    <ng-template #commonMenu>
+      <span class="settings-header">Общие настройки</span>
+      <form [formGroup]="formCommon">
+        <div class="base-titled-input">
+          <span>Скрыть Yandex диски</span>
+          <mat-slide-toggle formControlName="enableYandex"></mat-slide-toggle>
+        </div>
+        <div class="base-titled-input">
+          <span>Скрыть Google диски</span>
+          <mat-slide-toggle formControlName="enableGoogle"></mat-slide-toggle>
+        </div>
+      </form>
+    </ng-template>
+  </div>
 </div>

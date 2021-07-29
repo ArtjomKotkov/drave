@@ -10,6 +10,7 @@ import {DrivesStoreService} from './backend/services/shared/store.service';
 import {LocalStorageService} from './core_services/storage/local.storage';
 import {PipesModule} from './features/pipes/pipes.module';
 import {KeyValue} from './utils';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import {KeyValue} from './utils';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    PipesModule
+    PipesModule,
+    BrowserAnimationsModule
   ],
   providers: [
     FactoryResolver,

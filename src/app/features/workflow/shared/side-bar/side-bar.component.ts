@@ -15,6 +15,9 @@ export class SideBarComponent implements OnInit {
 
   $selectedDrive: BehaviorSubject<AbstractDrive | undefined> = new BehaviorSubject<AbstractDrive | undefined>(undefined);
 
+  menuOpened = false;
+  menuMode: 'drive' | 'common' = 'common';
+
   constructor() {
   }
 
@@ -22,10 +25,24 @@ export class SideBarComponent implements OnInit {
   }
 
   selectDrive(drive: AbstractDrive): void {
+    this.menuMode = 'drive';
     if (this.$selectedDrive.getValue() === drive) {
       this.$selectedDrive.next(undefined);
+      this.menuOpened = false;
     } else {
       this.$selectedDrive.next(drive);
+      this.menuOpened = true;
+    }
+  }
+
+  switchCommonMenu(): void {
+    this.menuMode = 'common';
+    if (this.$selectedDrive.getValue()) {
+      this.menuOpened = false;
+      this.$selectedDrive.next(undefined);
+      this.menuOpened = true;
+    } else {
+      this.menuOpened = !this.menuOpened;
     }
   }
 

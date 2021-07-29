@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DrivesStoreService} from '../../../backend/services/shared/store.service';
+import {FactoryResolver} from '../../../backend/factories';
 
 
 @Component({
@@ -10,12 +11,18 @@ import {DrivesStoreService} from '../../../backend/services/shared/store.service
 export class CommonComponent implements OnInit {
 
   constructor(
-    private drivesStoreService: DrivesStoreService
+    // TODO: временное решение, пака не могу подключить удаленный диск.
+    private drivesStoreService: DrivesStoreService,
+    private factoryResolver: FactoryResolver,
   ) {}
 
   $drives = this.drivesStoreService.drives;
 
   ngOnInit(): void {
+    const sampleDrive = this.factoryResolver.getFactory('yandex')?.sampleDrive;
+    if (sampleDrive) {
+      this.$drives.next({yandex: [sampleDrive]});
+    }
   }
 
 }

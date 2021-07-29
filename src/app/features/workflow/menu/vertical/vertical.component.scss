@@ -5,6 +5,71 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  color: white;
+
+  & .inner-wrapper {
+    margin: 10px;
+
+    .settings-header {
+      font-size: 18px;
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+  }
+
+  & .owner-name-block {
+    height: 25px;
+    width: 100%;
+    margin-bottom: 10px;
+
+    background: rgba(0, 0, 0, 0.12);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  & .base-titled-input {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    &.delete-drive-input {
+      margin-bottom: 30px;
+    }
+
+    & span {
+      font-size: 12px;
+    }
+
+    & .delete-drive-button {
+      width: 100%;
+      height: 25px;
+
+      border: none;
+      outline: none;
+
+      background: #EB4335;
+      border-radius: 5px;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+  }
+
+  & .titled-input {
+    margin-bottom: 10px;
+  }
+
 }
 
 .open {

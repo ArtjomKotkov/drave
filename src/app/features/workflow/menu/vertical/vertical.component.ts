@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {AbstractDrive} from '../../../../backend/state';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {AbstractDriveMetaData} from '../../../../backend/state/base/model.abstract';
@@ -14,16 +14,25 @@ import {DriveConfig} from '../../../../backend/state/base/config.abstract';
 export class VerticalComponent implements OnInit {
 
   @Input() selectedDrive: BehaviorSubject<AbstractDrive | undefined> = new BehaviorSubject<AbstractDrive | undefined>(undefined);
+  @Input() opened = false;
+  @Input() mode: 'drive' | 'common' = 'common';
 
   $driveMetaData: Subject<AbstractDriveMetaData> = new Subject<AbstractDriveMetaData>();
 
+  // TODO: починить отображение метаданных и формы в целом.
+
   constructor(
-    private drivesStoreService: DrivesStoreService
+    private drivesStoreService: DrivesStoreService,
   ) {}
 
-  form = new FormGroup({
+  formDrive = new FormGroup({
     active: new FormControl(false),
     hidden: new FormControl(false)
+  });
+
+  formCommon = new FormGroup({
+    enableYandex: new FormControl(false),
+    enableGoogle: new FormControl(false)
   });
 
 
@@ -46,15 +55,19 @@ export class VerticalComponent implements OnInit {
   }
 
   setDefaultFormValue(config: DriveConfig): void {
-    const active = config.workflow?.default?.isEnabled ? config.workflow?.default?.isEnabled : false;
-    if (!active) {
-      this.form.disable();
-      this.form.controls.active.enable();
+    if (this.mode === 'drive') {
+      const active = config.workflow?.default?.isEnabled ? config.workflow?.default?.isEnabled : false;
+      if (!active) {
+        this.formDrive.disable();
+        this.formDrive.controls.active.enable();
+      }
+      this.formDrive.setValue({
+        active,
+        hidden: config.workflow?.default?.isHidden ? config.workflow?.default?.isHidden : false,
+      });
+    } else {
+
     }
-    this.form.setValue({
-      active,
-      hidden: config.workflow?.default?.isHidden ? config.workflow?.default?.isHidden : false,
-    });
   }
 
   saveConfig(): void {

@@ -10,6 +10,8 @@ import {ScrollAreaComponent} from './shared/scroll-area/scroll-area.component';
 import {DirectivesModule} from '../dirrectives/directives.module';
 import { VerticalComponent } from './menu/vertical/vertical.component';
 import {ReactiveFormsModule} from '@angular/forms';
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 
 @NgModule({
@@ -23,13 +25,15 @@ import {ReactiveFormsModule} from '@angular/forms';
     KeyValue,
     VerticalComponent,
   ],
-    imports: [
-        CommonModule,
-        WorkflowRoutingModule,
-        PipesModule,
-        DirectivesModule,
-        ReactiveFormsModule
-    ]
+  imports: [
+    CommonModule,
+    WorkflowRoutingModule,
+    PipesModule,
+    DirectivesModule,
+    ReactiveFormsModule,
+    MatSlideToggleModule,
+    MatProgressBarModule
+  ]
 })
 export class WorkflowModule {
 }
