@@ -7,7 +7,7 @@ import {Injectable} from '@angular/core';
 export class LocalStorageService {
   storage = window.localStorage;
 
-  write(key: string, data: any): void {
+  write(key: string, data: string): void {
     this.storage.setItem(key, data);
   }
 

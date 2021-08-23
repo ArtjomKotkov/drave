@@ -19,10 +19,6 @@ export class CommonComponent implements OnInit {
   $drives = this.drivesStoreService.drives;
 
   ngOnInit(): void {
-    const sampleDrive = this.factoryResolver.getFactory('yandex')?.sampleDrive;
-    if (sampleDrive) {
-      this.$drives.next({yandex: [sampleDrive]});
-    }
   }
 
 }

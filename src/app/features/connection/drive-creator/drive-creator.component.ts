@@ -4,6 +4,7 @@ import {AbstractDrive} from '../../../backend/state';
 import {DrivesStoreService} from '../../../backend/services/shared/store.service';
 import {DriveFactories} from '../../../backend/factories/drive.factory';
 import {CommonConfig} from '../../../backend/state/base/config.abstract';
+import {driveConfig} from './drive-creator.const';
 
 
 @Component({
@@ -15,7 +16,7 @@ export class DriveCreatorComponent implements OnInit {
 
   constructor(
     private driveFactoryResolver: FactoryResolver,
-    private drivesStoreService: DrivesStoreService
+    private drivesStoreService: DrivesStoreService,
   ) {
   }
 
@@ -23,6 +24,7 @@ export class DriveCreatorComponent implements OnInit {
   drive: AbstractDrive | undefined;
 
   async ngOnInit(): Promise<void> {
+
     await this.createDrive();
   }
 
@@ -36,11 +38,12 @@ export class DriveCreatorComponent implements OnInit {
       return;
     }
     this.drive = this.factory.make();
+    const fullConfig = driveConfig;
+    fullConfig.common = commonConfig;
     await this.drive.configure({
-      config: {
-        common: commonConfig
-      }
+      config: fullConfig
     });
+
   }
 
   extractState(): CommonConfig | undefined {

@@ -19,6 +19,8 @@ export class GoogleDrive extends AbstractDrive {
 
     this.$credentials.subscribe(credentials => this.driveService.rebuild(credentials));
     await this.driveService.registerCallback(401, this.authService.updateToken.bind(this.authService));
+
+    this.configService.config.subscribe(_ => this.$changed.next(true));
   }
 
   async configure(data: StorableData): Promise<void> {

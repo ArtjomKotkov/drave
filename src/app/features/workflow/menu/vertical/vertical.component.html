@@ -1,13 +1,13 @@
 <div
   class="menu"
   [ngClass]="{'open': opened}"
-  [ngStyle]="{
-    'background-color': '#'+(selectedDrive | async)?.color
-  }">
+  drDynamicColor
+  [color]="selectedDrive ? selectedDrive.color : '40333C'"
+>
   <div class="inner-wrapper">
     <ng-container *ngIf="mode === 'drive'; else commonMenu">
       <span class="settings-header">Настройки удаленного диска</span>
-      <div *ngIf="($driveMetaData | async) as metadata">
+      <div *ngIf="driveMetaData as metadata">
         <form [formGroup]="formDrive">
           <div class="base-titled-input">
             <span>Диск активен</span>

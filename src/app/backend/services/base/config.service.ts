@@ -1,6 +1,6 @@
-
 import {BehaviorSubject} from 'rxjs';
 import {DriveConfig} from '../../state/base/config.abstract';
+import {driveConfig} from '../../../features/connection/drive-creator/drive-creator.const';
 
 
 export class ConfigService {
@@ -9,9 +9,11 @@ export class ConfigService {
 
   constructor(
     // tslint:disable-next-line:variable-name
-    private config_: DriveConfig
+    private config_: Partial<DriveConfig>
   ) {
-    this.configData = new BehaviorSubject<DriveConfig>(config_);
+    const driveConfigCopy = JSON.parse(JSON.stringify(driveConfig));
+    driveConfigCopy.base = config_.base;
+    this.configData = new BehaviorSubject<DriveConfig>(driveConfigCopy);
   }
 
   set(config: DriveConfig): void {

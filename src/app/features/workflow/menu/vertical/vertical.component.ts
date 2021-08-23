@@ -1,29 +1,36 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {Subscription} from 'rxjs';
+
+import {UntilDestroy} from '@ngneat/until-destroy';
+
 import {AbstractDrive} from '../../../../backend/state';
-import {BehaviorSubject, Subject} from 'rxjs';
 import {AbstractDriveMetaData} from '../../../../backend/state/base/model.abstract';
 import {DrivesStoreService} from '../../../../backend/services/shared/store.service';
-import {FormControl, FormGroup} from '@angular/forms';
 import {DriveConfig} from '../../../../backend/state/base/config.abstract';
+import {CommonConfigService} from '../../../../backend/services/common/common-config.service';
 
+
+@UntilDestroy()
 @Component({
   selector: 'dr-vertical-menu',
   templateUrl: './vertical.component.html',
-  styleUrls: ['./vertical.component.scss']
+  styleUrls: ['./vertical.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VerticalComponent implements OnInit {
+export class VerticalComponent implements OnChanges, OnInit {
 
-  @Input() selectedDrive: BehaviorSubject<AbstractDrive | undefined> = new BehaviorSubject<AbstractDrive | undefined>(undefined);
+  @Input() selectedDrive?: AbstractDrive;
   @Input() opened = false;
   @Input() mode: 'drive' | 'common' = 'common';
 
-  $driveMetaData: Subject<AbstractDriveMetaData> = new Subject<AbstractDriveMetaData>();
-
-  // TODO: починить отображение метаданных и формы в целом.
+  driveMetaData?: AbstractDriveMetaData;
 
   constructor(
     private drivesStoreService: DrivesStoreService,
-  ) {}
+    private commonConfigService: CommonConfigService,
+  ) {
+  }
 
   formDrive = new FormGroup({
     active: new FormControl(false),
@@ -35,43 +42,88 @@ export class VerticalComponent implements OnInit {
     enableGoogle: new FormControl(false)
   });
 
-
   ngOnInit(): void {
-    this.selectedDrive.subscribe(drive => {
-      if (!drive) {
-        return;
-      }
-      this.$driveMetaData.next(drive.driveService.getMetaData());
-      drive.configService.config.subscribe(config => this.setDefaultFormValue(config));
-    });
+    this.formDrive.valueChanges.subscribe(value => this.updateDriveFormValues(value));
+    this.formCommon.valueChanges.subscribe(value => this.updateCommonFormValues(value));
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.selectedDrive) {
+      this.driveMetaData = this.selectedDrive.driveService.getMetaData();
+      this.setDefaultDriveFormValue(this.selectedDrive.configService.config.getValue());
+    } else {
+      this.setDefaultCommonFormValue();
+    }
   }
 
   deleteDrive(): void {
-    const drive = this.selectedDrive.getValue();
-    if (!drive) {
+    if (!confirm('Вы действительно хотите удалить этот диск?')) {
       return;
     }
-    this.drivesStoreService.delete(drive);
-  }
-
-  setDefaultFormValue(config: DriveConfig): void {
-    if (this.mode === 'drive') {
-      const active = config.workflow?.default?.isEnabled ? config.workflow?.default?.isEnabled : false;
-      if (!active) {
-        this.formDrive.disable();
-        this.formDrive.controls.active.enable();
-      }
-      this.formDrive.setValue({
-        active,
-        hidden: config.workflow?.default?.isHidden ? config.workflow?.default?.isHidden : false,
-      });
-    } else {
-
+    if (!this.selectedDrive) {
+      return;
     }
+    this.drivesStoreService.delete(this.selectedDrive);
   }
 
-  saveConfig(): void {
-    const currentDrive = this.selectedDrive.getValue();
+  setDefaultDriveFormValue(config: DriveConfig): void {
+    if (this.mode !== 'drive') {
+      return;
+    }
+    const active = config.workflow?.default?.isEnabled ? config.workflow?.default?.isEnabled : false;
+    if (!active) {
+      this.formDrive.disable();
+      this.formDrive.controls.active.enable();
+    }
+    this.formDrive.setValue({
+      active,
+      hidden: config.workflow?.default?.isHidden ? config.workflow?.default?.isHidden : false,
+    });
+  }
+
+  setDefaultCommonFormValue(): void {
+    if (this.mode !== 'common') {
+      return;
+    }
+    const config = this.commonConfigService.config;
+    this.formCommon.setValue({
+      enableYandex: config.workflow.yandexEnabled,
+      enableGoogle: config.workflow.googleEnabled,
+    });
+  }
+
+  updateDriveFormValues(value: Record<string, any>): void {
+    if (!this.selectedDrive) {
+      return;
+    }
+    const currentDriveConfig = this.selectedDrive.config;
+    Object.keys(value).forEach(key => {
+      switch (key) {
+        case 'active':
+          currentDriveConfig.workflow.default.isEnabled = value.active;
+          break;
+        case 'hidden':
+          currentDriveConfig.workflow.default.isHidden = value.hidden;
+          break;
+      }
+    });
+    this.selectedDrive?.configService.set(currentDriveConfig);
+  }
+
+  updateCommonFormValues(value: Record<string, any>): void {
+
+    const commonConfig = this.commonConfigService.config;
+    Object.keys(value).forEach(key => {
+      switch (key) {
+        case 'enableYandex':
+          commonConfig.workflow.yandexEnabled = value.enableYandex;
+          break;
+        case 'enableGoogle':
+          commonConfig.workflow.googleEnabled = value.enableGoogle;
+          break;
+      }
+    });
+    this.commonConfigService.set(commonConfig);
   }
 
 }

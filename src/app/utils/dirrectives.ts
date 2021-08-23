@@ -1,10 +1,10 @@
-import {Directive, OnInit, ElementRef, Input} from '@angular/core';
+import {Directive, ElementRef, Input, OnChanges, SimpleChanges} from '@angular/core';
 
 
 @Directive({
-  selector: '[drDynamicColor]'
+  selector: '[drDynamicColor]',
 })
-export class ColorDirective implements OnInit {
+export class ColorDirective implements OnChanges {
 
   @Input() color!: string | undefined;
 
@@ -13,7 +13,7 @@ export class ColorDirective implements OnInit {
   ) {
   }
 
-  ngOnInit(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     this.updateColor();
   }
 

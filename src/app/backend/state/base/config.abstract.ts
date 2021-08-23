@@ -1,13 +1,13 @@
 export interface DriveConfig {
   base?: BaseConfig;
-  common?: CommonConfig;
-  workflow?: WorkFlowConfig;
+  common: CommonConfig;
+  workflow: WorkFlowConfig;
 }
 
 export interface CommonConfig {
-  color?: string;
-  name?: string;
-  type?: string;
+  color: string;
+  name: string;
+  type: string;
 }
 
 export interface BaseConfig {
@@ -17,10 +17,19 @@ export interface BaseConfig {
 }
 
 export interface WorkFlowConfig  {
-  default?: DefaultWorkFlowConfig;
+  default: DefaultWorkFlowConfig;
 }
 
 export interface DefaultWorkFlowConfig {
-  isEnabled?: boolean;
-  isHidden?: boolean;
+  isEnabled: boolean;
+  isHidden: boolean;
+}
+
+export interface AppConfig {
+  workflow: AppWorkFlowConfig;
+}
+
+export interface AppWorkFlowConfig  {
+  yandexEnabled: boolean;
+  googleEnabled: boolean;
 }

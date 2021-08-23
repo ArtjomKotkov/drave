@@ -13,10 +13,10 @@ export const GoogleConfig: BaseConfig  = {
   baseColor: '#FFD04B'
 };
 
-export const YandexDriveConfig: DriveConfig = {
-  base: YandexConfig
+export const YandexDriveConfig: Partial<DriveConfig> = {
+  base: YandexConfig,
 };
 
-export const GoogleDriveConfig: DriveConfig = {
+export const GoogleDriveConfig: Partial<DriveConfig> = {
   base: GoogleConfig
 };

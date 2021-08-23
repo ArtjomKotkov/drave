@@ -75,7 +75,7 @@ export abstract class AbstractDrive {
 
   abstract configure(data: StorableData): Promise<void>;
 
-  get config(): DriveConfig | undefined {
+  get config(): DriveConfig {
     return this.configService.config.getValue();
   }
 
