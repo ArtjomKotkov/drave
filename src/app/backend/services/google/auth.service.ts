@@ -14,7 +14,7 @@ export class GoogleAuthService extends AbstractAuthService {
     super();
   }
 
-  async configure(credentials: Credentials): Promise<void> {
+  async configure(credentials?: Credentials): Promise<void> {
     if (credentials) {
       this.setCredentials(credentials);
     } else {

@@ -1,5 +1,5 @@
 import {AbstractDrive, StorableData, YandexDrive} from '../state';
-import {AbstractDriveFactory} from './base/drive-factory.abstract';
+import {AbstractDriveFactory, getDefaultConfigByType} from './base/drive-factory.abstract';
 import {Injectable} from '@angular/core';
 import {GoogleDrive} from '../state/google/drive.model';
 import {driveConfig} from "../../features/connection/drive-creator/drive-creator.const";
@@ -29,11 +29,11 @@ export class FactoryResolver {
 class YandexDriveFactory extends AbstractDriveFactory {
   name = 'yandex';
   driveClass: any = YandexDrive;
-  sampleDrive: YandexDrive = new YandexDrive(driveConfig);
+  sampleDrive: YandexDrive = new YandexDrive(getDefaultConfigByType(this.name));
 }
 
 class GoogleDriveFactory extends AbstractDriveFactory {
   name = 'google';
   driveClass: any = GoogleDrive;
-  sampleDrive: GoogleDrive = new GoogleDrive(driveConfig);
+  sampleDrive: GoogleDrive = new GoogleDrive(getDefaultConfigByType(this.name));
 }

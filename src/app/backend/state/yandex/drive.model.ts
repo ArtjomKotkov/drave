@@ -26,7 +26,7 @@ export class YandexDrive extends AbstractDrive {
     this.configService.config.subscribe(_ => this.$changed.next(true));
   }
 
-  async configure(credentials: Credentials): Promise<void> {
+  async configure(credentials?: Credentials): Promise<void> {
     await this.authService.configure(credentials);
   }
 

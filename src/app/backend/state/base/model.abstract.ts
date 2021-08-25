@@ -79,7 +79,7 @@ export abstract class AbstractDrive {
     return this.driveService;
   }
 
-  abstract configure(credentials: Credentials): Promise<void>;
+  abstract configure(credentials?: Credentials): Promise<void>;
 
   get config(): DriveConfig {
     return this.configService.config.getValue();

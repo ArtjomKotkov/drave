@@ -12,4 +12,4 @@ export const baseConfigsByType: Record<string, BaseConfig> = {
     trashRoot: '',
     baseColor: '#FFD04B'
   }
-}
+};

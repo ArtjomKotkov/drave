@@ -25,7 +25,6 @@ export class DriveCreatorComponent implements OnInit {
   drive: AbstractDrive | undefined;
 
   async ngOnInit(): Promise<void> {
-
     await this.createDrive();
   }
 
@@ -43,6 +42,7 @@ export class DriveCreatorComponent implements OnInit {
     fullConfig.base = baseConfigsByType[fullConfig.common.type];
 
     this.drive = this.factory.make(fullConfig);
+    this.drive.configure();
   }
 
   extractState(): CommonConfig | undefined {
