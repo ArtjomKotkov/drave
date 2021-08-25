@@ -37,6 +37,10 @@ export class CommonConfigService {
     return this.$config.getValue();
   }
 
+  get configObservable(): BehaviorSubject<AppConfig> {
+    return this.$config;
+  }
+
   set(value: AppConfig): void {
     this.$config.next(value);
     this.storageService.write(this.storageKey, JSON.stringify(value));

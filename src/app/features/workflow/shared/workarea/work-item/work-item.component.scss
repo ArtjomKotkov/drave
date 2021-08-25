@@ -1,0 +1,23 @@
+.root-wrapper {
+  height: 120px;
+  width: 100px;
+  margin: 5px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  padding-top: 10px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  & svg {
+    width: 80%;
+    & path.dynamic, rect.dynamic {
+      fill: var(--color-dynamic);
+    }
+  }
+}

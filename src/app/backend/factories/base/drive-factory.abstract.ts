@@ -1,4 +1,5 @@
 import {AbstractDrive, StorableData} from '../../state';
+import {DriveConfig} from '../../state/base/config.abstract';
 
 
 export abstract class AbstractDriveFactory {
@@ -7,7 +8,16 @@ export abstract class AbstractDriveFactory {
   abstract driveClass: any;
   abstract sampleDrive: AbstractDrive;
 
-  abstract make(): AbstractDrive;
+  make(configData: DriveConfig): AbstractDrive {
+    const drive = new this.driveClass(configData);
+    drive.init();
+    return drive;
+  }
 
-  abstract makeFromStorableData(data: StorableData): Promise<AbstractDrive>;
+  async makeFromStorableData(data: StorableData): Promise<AbstractDrive> {
+    const drive = new this.driveClass(data.config);
+    await drive.init();
+    await drive.configure(data.credentials);
+    return drive;
+  }
 }

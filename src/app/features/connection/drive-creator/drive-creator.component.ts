@@ -5,6 +5,7 @@ import {DrivesStoreService} from '../../../backend/services/shared/store.service
 import {DriveFactories} from '../../../backend/factories/drive.factory';
 import {CommonConfig} from '../../../backend/state/base/config.abstract';
 import {driveConfig} from './drive-creator.const';
+import {baseConfigsByType} from '../../../backend/state/yandex/config.data';
 
 
 @Component({
@@ -37,13 +38,11 @@ export class DriveCreatorComponent implements OnInit {
     if (!this.factory) {
       return;
     }
-    this.drive = this.factory.make();
     const fullConfig = driveConfig;
     fullConfig.common = commonConfig;
-    await this.drive.configure({
-      config: fullConfig
-    });
+    fullConfig.base = baseConfigsByType[fullConfig.common.type];
 
+    this.drive = this.factory.make(fullConfig);
   }
 
   extractState(): CommonConfig | undefined {

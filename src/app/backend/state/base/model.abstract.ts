@@ -47,6 +47,7 @@ export interface AbstractFile {
     files?: AbstractFile[]
   };
   trashed?: boolean;
+  drive: AbstractDrive;
 }
 
 export interface AbstractResponse {
@@ -66,6 +67,11 @@ export abstract class AbstractDrive {
   abstract driveService: DriveAbstractService;
   abstract configService: ConfigService;
 
+  constructor(private driveConfig: DriveConfig) {
+  }
+
+  initConfig: DriveConfig = this.driveConfig;
+
   callStack: Stack<string> = new Stack<string>();
   $changed = new Subject();
 
@@ -73,7 +79,7 @@ export abstract class AbstractDrive {
     return this.driveService;
   }
 
-  abstract configure(data: StorableData): Promise<void>;
+  abstract configure(credentials: Credentials): Promise<void>;
 
   get config(): DriveConfig {
     return this.configService.config.getValue();

@@ -26,6 +26,8 @@ export class VerticalComponent implements OnChanges, OnInit {
 
   driveMetaData?: AbstractDriveMetaData;
 
+  loading = false;
+
   constructor(
     private drivesStoreService: DrivesStoreService,
     private commonConfigService: CommonConfigService,
@@ -48,6 +50,7 @@ export class VerticalComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.loading = true;
     if (this.selectedDrive) {
       this.driveMetaData = this.selectedDrive.driveService.getMetaData();
       this.setDefaultDriveFormValue(this.selectedDrive.configService.config.getValue());

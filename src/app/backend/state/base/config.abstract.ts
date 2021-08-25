@@ -1,5 +1,5 @@
 export interface DriveConfig {
-  base?: BaseConfig;
+  base: BaseConfig;
   common: CommonConfig;
   workflow: WorkFlowConfig;
 }
@@ -11,8 +11,8 @@ export interface CommonConfig {
 }
 
 export interface BaseConfig {
-  rootFolder: string;
-  trashRoot: string;
+  readonly rootFolder: string;
+  readonly trashRoot: string;
   baseColor: string;
 }
 

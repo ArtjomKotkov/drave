@@ -24,4 +24,8 @@ export class Stack<TData> {
     this.store = [];
   }
 
+  getLast(): TData {
+    return this.store[this.store.length - 1];
+  }
+
 }

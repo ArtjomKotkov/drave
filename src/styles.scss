@@ -6,12 +6,15 @@
   --color-dynamic: var(--color-base-blue);
 }
 
+html {
+  height: 100vh;
+}
+
 body {
   margin: 0;
   padding: 0;
   background-color: var(--color-common-background);
-  max-height: 100vh;
+  height: 100vh !important;
 }
 
-html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

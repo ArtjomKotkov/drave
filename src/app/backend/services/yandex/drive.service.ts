@@ -1,10 +1,9 @@
 import {YandexDriveHandler} from '../../handlers';
 import {DriveAbstractService} from '../base/drive.abstract';
-import {YandexConfig} from '../../state/yandex/config.data';
+import {baseConfigsByType} from '../../state/yandex/config.data';
 import {AbstractDrive, Credentials} from '../../state';
 import {YandexMetaData} from '../../state/yandex/yandex.model';
 import {BehaviorSubject} from 'rxjs';
-import {Stack} from '../../shared';
 import {AbstractFile} from '../../state/base/model.abstract';
 
 
@@ -14,7 +13,7 @@ export class YandexDriveService extends DriveAbstractService {
   private metaData: BehaviorSubject<YandexMetaData | undefined> = new BehaviorSubject<YandexMetaData | undefined>(undefined);
 
   constructor(
-    private callStack: Stack<string>
+    private yandexDrive: AbstractDrive,
   ) {
     super();
   }
@@ -61,8 +60,7 @@ export class YandexDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<AbstractFile> {
-    this.callStack.clear();
-    return await this.get(YandexConfig.rootFolder, fields, limit, offset);
+    return await this.get(baseConfigsByType.yandex.rootFolder, fields, limit, offset);
   }
 
   async get(
@@ -71,7 +69,6 @@ export class YandexDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<AbstractFile> {
-    this.callStack.add(identificator);
     return this.yandexDataToFile(await this.handler.get(identificator, fields, limit, offset)) as AbstractFile;
   }
 
@@ -153,7 +150,7 @@ export class YandexDriveService extends DriveAbstractService {
   async clearTrash(
     fields?: Array<string> | undefined
   ): Promise<AbstractFile> {
-    const response = this.yandexDataToFile(await this.handler.clearTrash(YandexConfig.trashRoot, fields)) as AbstractFile;
+    const response = this.yandexDataToFile(await this.handler.clearTrash(baseConfigsByType.yandex.trashRoot, fields)) as AbstractFile;
     await this.updateMetaData();
     return response;
   }
@@ -212,20 +209,7 @@ export class YandexDriveService extends DriveAbstractService {
 
   private yandexDataToFile(data: any, getNested: boolean = true): AbstractFile {
 
-    function getFileData(dataN: any): AbstractFile {
-      return {
-        id: dataN.path,
-        name: dataN.name,
-        mimeType: dataN.mime_type,
-        size: dataN.size,
-        created: dataN.created,
-        modified: dataN.modified,
-        isDir: !!dataN._embedded?.items,
-        type: dataN.type,
-      };
-    }
-
-    const output = getFileData(data);
+    const output: AbstractFile = this.getFileData(data);
 
     if (getNested && data._embedded && data._embedded.items) {
       output.nested = {
@@ -234,10 +218,24 @@ export class YandexDriveService extends DriveAbstractService {
         files: []
       };
       for (const item of data._embedded.items) {
-        output.nested?.files?.push(getFileData(item));
+        output.nested?.files?.push(this.getFileData(item));
       }
     }
     return output;
+  }
+
+  private getFileData(data: any): AbstractFile {
+    return {
+      id: data.path,
+      name: data.name,
+      mimeType: data.mime_type,
+      size: data.size,
+      created: data.created,
+      modified: data.modified,
+      isDir: data.type === 'dir',
+      type: data.type,
+      drive: this.yandexDrive,
+    };
   }
 
 }

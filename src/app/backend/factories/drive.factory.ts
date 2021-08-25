@@ -2,6 +2,8 @@ import {AbstractDrive, StorableData, YandexDrive} from '../state';
 import {AbstractDriveFactory} from './base/drive-factory.abstract';
 import {Injectable} from '@angular/core';
 import {GoogleDrive} from '../state/google/drive.model';
+import {driveConfig} from "../../features/connection/drive-creator/drive-creator.const";
+import {DriveConfig} from "../state/base/config.abstract";
 
 export type DriveFactories = YandexDriveFactory | GoogleDriveFactory;
 
@@ -25,41 +27,13 @@ export class FactoryResolver {
 
 
 class YandexDriveFactory extends AbstractDriveFactory {
-
   name = 'yandex';
   driveClass: any = YandexDrive;
-  sampleDrive: YandexDrive = new YandexDrive();
-
-  make(): AbstractDrive {
-    const drive = new this.driveClass();
-    drive.init();
-    return drive;
-  }
-
-  async makeFromStorableData(data: StorableData): Promise<AbstractDrive> {
-    const drive = new this.driveClass();
-    await drive.init();
-    await drive.configure(data);
-    return drive;
-  }
+  sampleDrive: YandexDrive = new YandexDrive(driveConfig);
 }
 
 class GoogleDriveFactory extends AbstractDriveFactory {
-
   name = 'google';
   driveClass: any = GoogleDrive;
-  sampleDrive: GoogleDrive = new GoogleDrive();
-
-  make(): AbstractDrive {
-    const drive = new this.driveClass();
-    drive.init();
-    return drive;
-  }
-
-  async makeFromStorableData(data: StorableData): Promise<AbstractDrive> {
-    const drive = new this.driveClass();
-    await drive.init();
-    await drive.configure(data);
-    return drive;
-  }
+  sampleDrive: GoogleDrive = new GoogleDrive(driveConfig);
 }

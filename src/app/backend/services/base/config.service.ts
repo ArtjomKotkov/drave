@@ -5,16 +5,10 @@ import {driveConfig} from '../../../features/connection/drive-creator/drive-crea
 
 export class ConfigService {
 
-  readonly configData: BehaviorSubject<DriveConfig>;
-
-  constructor(
-    // tslint:disable-next-line:variable-name
-    private config_: Partial<DriveConfig>
-  ) {
-    const driveConfigCopy = JSON.parse(JSON.stringify(driveConfig));
-    driveConfigCopy.base = config_.base;
-    this.configData = new BehaviorSubject<DriveConfig>(driveConfigCopy);
+  constructor(private initDriveConfig: DriveConfig) {
   }
+
+  readonly configData: BehaviorSubject<DriveConfig> = new BehaviorSubject<DriveConfig>(this.initDriveConfig);
 
   set(config: DriveConfig): void {
     this.configData.next(config);

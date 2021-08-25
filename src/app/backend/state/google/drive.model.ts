@@ -1,16 +1,20 @@
 import {AbstractDrive, Credentials, StorableData} from '../base';
-import {GoogleDriveConfig} from '../yandex/config.data';
 import {GoogleDriveService} from '../../services/google/drive.service';
 import {GoogleAuthService} from '../../services/google/auth.service';
 import {BehaviorSubject} from 'rxjs';
 import {ConfigService} from '../../services/base/config.service';
+import {DriveConfig} from '../base/config.abstract';
 
 
 export class GoogleDrive extends AbstractDrive {
 
-  driveService: GoogleDriveService = new GoogleDriveService(this.callStack);
+  constructor(driveConfig: DriveConfig) {
+    super(driveConfig);
+  }
+
+  driveService: GoogleDriveService = new GoogleDriveService(this);
   authService: GoogleAuthService = new GoogleAuthService(this.$changed);
-  configService: ConfigService = new ConfigService(GoogleDriveConfig);
+  configService: ConfigService = new ConfigService(this.initConfig);
 
   private $credentials!: BehaviorSubject<Credentials | undefined>;
 
@@ -23,11 +27,8 @@ export class GoogleDrive extends AbstractDrive {
     this.configService.config.subscribe(_ => this.$changed.next(true));
   }
 
-  async configure(data: StorableData): Promise<void> {
-    if (data.config) {
-      this.configService.set(data.config);
-    }
-    await this.authService.configure(data);
+  async configure(credentials: Credentials): Promise<void> {
+    await this.authService.configure(credentials);
   }
 
 }

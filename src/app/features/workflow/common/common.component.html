@@ -1,7 +1,9 @@
 <dr-section>
   <div class="wrapper">
-    <div class="worflow">
-
+    <div class="workflow">
+      <dr-scroll-area>
+        <dr-workarea [drives]="$drives.getValue()"></dr-workarea>
+      </dr-scroll-area>
     </div>
     <dr-side-bar [drives]="$drives"></dr-side-bar>
   </div>

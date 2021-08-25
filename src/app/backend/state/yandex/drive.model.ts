@@ -1,15 +1,19 @@
 import {AbstractDrive, Credentials, StorableData} from '../base';
 import {YandexAuthService, YandexDriveService} from '../../services/yandex';
-import {YandexDriveConfig} from './config.data';
 import {BehaviorSubject} from 'rxjs';
 import {ConfigService} from '../../services/base/config.service';
+import {DriveConfig} from '../base/config.abstract';
 
 
 export class YandexDrive extends AbstractDrive {
 
-  driveService: YandexDriveService = new YandexDriveService(this.callStack);
+  constructor(driveConfig: DriveConfig) {
+    super(driveConfig);
+  }
+
+  driveService: YandexDriveService = new YandexDriveService(this);
   authService: YandexAuthService = new YandexAuthService(this.$changed);
-  configService: ConfigService = new ConfigService(YandexDriveConfig);
+  configService: ConfigService = new ConfigService(this.initConfig);
 
   private $credentials!: BehaviorSubject<Credentials | undefined>;
 
@@ -22,11 +26,8 @@ export class YandexDrive extends AbstractDrive {
     this.configService.config.subscribe(_ => this.$changed.next(true));
   }
 
-  async configure(data: StorableData): Promise<void> {
-    if (data.config) {
-      this.configService.set(data.config);
-    }
-    await this.authService.configure(data);
+  async configure(credentials: Credentials): Promise<void> {
+    await this.authService.configure(credentials);
   }
 
 }

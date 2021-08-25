@@ -14,9 +14,9 @@ export class YandexAuthService extends AbstractAuthService {
     super();
   }
 
-  async configure(data: StorableData): Promise<void> {
-    if (data.credentials) {
-      this.setCredentials(data.credentials);
+  async configure(credentials: Credentials): Promise<void> {
+    if (credentials) {
+      this.setCredentials(credentials);
     } else {
       await this.handleBackRedirect();
     }

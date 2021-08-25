@@ -12,6 +12,8 @@ import { VerticalComponent } from './menu/vertical/vertical.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import { WorkareaComponent } from './shared/workarea/workarea.component';
+import { WorkItemComponent } from './shared/workarea/work-item/work-item.component';
 
 
 @NgModule({
@@ -24,6 +26,8 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
     ColorDirective,
     KeyValue,
     VerticalComponent,
+    WorkareaComponent,
+    WorkItemComponent,
   ],
   imports: [
     CommonModule,

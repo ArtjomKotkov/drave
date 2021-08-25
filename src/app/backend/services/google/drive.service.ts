@@ -1,8 +1,7 @@
 import {DriveAbstractService} from '../base/drive.abstract';
-import {GoogleConfig} from '../../state/yandex/config.data';
+import {baseConfigsByType} from '../../state/yandex/config.data';
 import {AbstractDrive, Credentials} from '../../state';
 import {BehaviorSubject} from 'rxjs';
-import {Stack} from '../../shared';
 import {AbstractFile} from '../../state/base/model.abstract';
 import {GoogleDriveHandler} from '../../handlers/google/drive.handler';
 import {GoogleMetaData} from '../../state';
@@ -14,7 +13,7 @@ export class GoogleDriveService extends DriveAbstractService {
   private metaData: BehaviorSubject<GoogleMetaData | undefined> = new BehaviorSubject<GoogleMetaData | undefined>(undefined);
 
   constructor(
-    private callStack: Stack<string>,
+    private googleDrive: AbstractDrive,
   ) {
     super();
   }
@@ -60,8 +59,7 @@ export class GoogleDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<AbstractFile> {
-    this.callStack.clear();
-    return await this.get(GoogleConfig.rootFolder, fields, limit, offset);
+    return await this.get(baseConfigsByType.google.rootFolder, fields, limit, offset);
   }
 
   async get(
@@ -70,7 +68,6 @@ export class GoogleDriveService extends DriveAbstractService {
     limit?: number | undefined,
     offset?: number | undefined
   ): Promise<AbstractFile> {
-    this.callStack.add(identificator);
     const file = this.googleDataToFile(await this.handler.get(identificator, ['*'], limit, offset)) as AbstractFile;
     if (file && file.isDir) {
       const innerFiles = await this.handler.get(undefined, ['*'], undefined, undefined, {
@@ -221,22 +218,18 @@ export class GoogleDriveService extends DriveAbstractService {
   }
 
   private googleDataToFile(data: any): AbstractFile {
-
-    function getFileData(dataN: any): AbstractFile {
-      return {
-        id: dataN.id,
-        name: dataN.name,
-        mimeType: dataN.mimeType,
-        size: dataN.size,
-        created: dataN.createdTime,
-        modified: dataN.modifiedTime,
-        isDir: dataN.mimeType === 'application/vnd.google-apps.folder',
-        type: '',
-        trashed: dataN.trashed
-      };
-    }
-
-    return getFileData(data);
+    return {
+      id: data.id,
+      name: data.name,
+      mimeType: data.mimeType,
+      size: data.size,
+      created: data.createdTime,
+      modified: data.modifiedTime,
+      isDir: data.mimeType === 'application/vnd.google-apps.folder',
+      type: '',
+      trashed: data.trashed,
+      drive: this.googleDrive,
+    };
   }
 
 }
